@@ -1,9 +1,11 @@
 const router = require("express").Router();
 const { body } = require("express-validator");
+const helper_general = require("./helpers/general");
 const {
     user_login,
     user_register,
     user_forgot_password,
+    user_detail,
 } = require("./controllers/api/appUserController");
 
 router.post("/api/login",
@@ -53,5 +55,10 @@ router.post("/api/forgot-password",
         .isEmail(),
     ],
     user_forgot_password
+);
+
+router.get("/api/user-detail",
+[helper_general.verifyToken],
+user_detail
 );
 module.exports = router;

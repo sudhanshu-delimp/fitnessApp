@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const bcrypt = require('bcryptjs')
+const jwt = require("jsonwebtoken");
 const dbConnection = require("../../utils/dbConnection");
 const helper_email = require("../../helpers/email");
 const helper_general = require("../../helpers/general");
@@ -79,8 +80,12 @@ exports.user_login = async (req, res, next) => {
     try {
       if(error.length == 0){
         const [row] = await dbConnection.execute('SELECT id,name,phone,email FROM `users` WHERE `email`=?', [req.body.email]);
+        var token = jwt.sign({ id: row[0].id,email: row[0].email,phone: row[0].phone}, process.env.JWT_SECRET_KEY, {
+          expiresIn: 86400 // 24 hours
+        });
         response['status'] = '1';
         response['data']['user'] = row[0];
+        response['data']['accessToken'] = token;
       }
       else{
         response['data']['error'] = error;
@@ -135,4 +140,8 @@ exports.user_forgot_password = async (req, res, next) => {
   catch (e) {
       next(e);
   }
+}
+
+exports.user_detail = (req, res) => {
+  res.json(req.user);
 }
