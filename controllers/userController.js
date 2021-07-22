@@ -260,7 +260,7 @@ exports.registerPage = (req, res, next) => {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
-                        'api-key': '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'
+                        'api-key': process.env.SEND_IN_BLUE_API
                     },
                     body: JSON.stringify({
                         to: [{ email: body._email }],
