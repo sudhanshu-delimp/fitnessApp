@@ -28,7 +28,7 @@ app.use(api_routes);
 
 app.use((err, req, res, next) => {
     console.log(err);
-    return res.send('Internal Server Error');
+    return res.send('Internal Server Error'+err);
 });
 
 app.listen(port, () => console.log('Server is runngin on port '+port));
