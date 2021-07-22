@@ -58,6 +58,7 @@ router.post("/api/forgot-password",
 );
 
 router.get("/api/user-detail",
+[helper_general.verifyToken],
 user_detail
 );
 module.exports = router;
