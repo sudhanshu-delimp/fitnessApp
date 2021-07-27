@@ -156,8 +156,7 @@ var removeAlert=function(args){
 
 
 $(document).ready(function(){
-   
+
     $('#leads').wrap('<div class="table-slide"></div>');
     $('#salesReps').wrap('<div class="table-slide"></div>');
 });
-

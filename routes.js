@@ -10,7 +10,17 @@ const {
     profilePage,
     forgotPassword,
     forgotPasswordPage,
+    userListingPage,
+    getAppUsers,
+    deleteUser,
 } = require("./controllers/userController");
+
+const {
+    addExercisePage,
+    exerciseListingPage,
+    getExercises,
+    deleteExercise,
+} = require("./controllers/exerciseController");
 
 const ifNotLoggedin = (req, res, next) => {
     if(!req.session.userID){
@@ -64,7 +74,7 @@ router.post(
             .notEmpty()
             .escape()
             .trim()
-            .isNumeric(),    
+            .isNumeric(),
         body("_password", "The Password must be of minimum 4 characters length")
             .notEmpty()
             .trim()
@@ -94,16 +104,13 @@ router.post(
             .notEmpty()
             .escape()
             .trim()
-            .isNumeric(),    
+            .isNumeric(),
         body("_password").custom((value, { req })=>{
-            if(req.body._password !==''){
-                [
-                    body("_password", "The Password must be of minimum 43 characters length")
-                        .notEmpty()
-                        .trim()
-                        .isLength({ min: 4 }),
-                ]
+          if(req.body._password !== ''){
+            if(req.body._password.length < 4){
+                throw new Error('The Password must be of minimum 4 characters length.');
             }
+          }
             return true;
         }),
         body("_password_confirmation").custom((value, { req }) => {
@@ -112,7 +119,7 @@ router.post(
             }
             // Indicates the success of this synchronous custom validator
             return true;
-          }),  
+          }),
     ],
     profile
 );
@@ -128,4 +135,20 @@ router.post(
     ],
     forgotPassword
 );
+
+router.get("/users/manage", ifNotLoggedin, userListingPage);
+
+router.post(
+    "/users/get-app-users",
+    getAppUsers
+);
+router.post('/users/delete-user', ifNotLoggedin, deleteUser);
+
+router.get("/exercise/add", ifNotLoggedin, addExercisePage);
+router.get("/exercise/manage", ifNotLoggedin, exerciseListingPage);
+router.post(
+    "/exercise/get-exercises",
+    getExercises
+);
+router.post('/exercise/delete-exercise', ifNotLoggedin, deleteExercise);
 module.exports = router;

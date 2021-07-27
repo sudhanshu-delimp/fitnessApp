@@ -5,6 +5,51 @@ const dbConnection = require("../../utils/dbConnection");
 const helper_email = require("../../helpers/email");
 const helper_general = require("../../helpers/general");
 
+exports.getOtherUserDetail = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+  try {
+    if(error.length == 0){
+      var user_id = req.body.user_id;
+      await helper_general.getOtherUserDetail(user_id).then(row=>{
+        response['status'] = '1';
+        response['data']['user'] = row;
+        if(req.xhr === true){
+          res.render('users/user-edit', {
+              user: row
+          });
+        }
+        response['data']['message'] = "Data found";
+      },
+      err=>{
+        if(req.xhr === true){
+          res.render('users/user-edit', {
+              error: err
+          });
+        }
+        else{
+          error.push(err);
+          response['data']['error'] = error;
+        }
+      });
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    if(req.xhr === false){
+      res.json(response);
+    }
+  } catch (e) {
+    next(e);
+  }
+}
+
 exports.user_register = async (req, res, next) => {
   const errors = validationResult(req);
   var error = [];
@@ -43,7 +88,7 @@ exports.user_register = async (req, res, next) => {
         },err=>{
           response['data']['error'] = err;
         });
-        
+
       }
     }
     else{
@@ -107,8 +152,10 @@ exports.user_forgot_password = async (req, res, next) => {
     error.push(errors.array()[0].msg);
   }
   else{
-    await helper_general.emailExist(req.body.email).then(result=>{
-      if(result === false){
+    var fields = {};
+    fields['email = ?'] = req.body.email;
+    await helper_general.emailExist(fields).then(result=>{
+      if(!result){
         error.push('This email does not exist in the system.');
       }
     });
@@ -144,4 +191,87 @@ exports.user_forgot_password = async (req, res, next) => {
 
 exports.user_detail = (req, res) => {
   res.json(req.user);
+}
+
+exports.updateUser = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+  else{
+    var fields = {};
+    fields['email = ?'] = req.body.email;
+    fields['id != ?'] = req.body.user_id;
+    await helper_general.emailExist(fields).then(result=>{
+      if(result){
+        error.push('This email already in use.');
+      }
+    });
+  }
+  try {
+    if(error.length == 0){
+      var where = {};
+      var update = {};
+      where['id = ?'] = req.body.user_id;
+      update['name = ?'] = req.body.name;
+      update['email = ?'] = req.body.email;
+      update['phone = ?'] = req.body.phone;
+      if(req.body.password !== ''){
+        update['password = ?'] = await bcrypt.hash(req.body.password, 12);;
+      }
+      var conditions = helper_general.buildUpdateConditionsString(update, where);
+      var sql = "UPDATE `users` SET "+conditions.updates+" WHERE "+conditions.where;
+      await dbConnection.execute(sql,conditions.values).then((row) => {
+        //ResultSetHeader
+        response['status'] = '1';
+        response['data']['message'] = "Data has been updated successfully.";
+      }, (err) => {
+          response['data']['error'] = error;
+      })
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    res.json(response);
+  }
+  catch (e) {
+    next(e);
+  }
+}
+
+exports.deleteUser = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+  try {
+    if(error.length == 0){
+      var where = {};
+      where['id = ?'] = req.body.user_id;
+      var conditions = helper_general.buildDeleteConditionsString(where);
+      var sql = "DELETE FROM `users` WHERE "+conditions.where;
+      await dbConnection.execute(sql,conditions.values).then((row) => {
+        //ResultSetHeader
+        response['status'] = '1';
+        response['data']['message'] = "Data has been deleted successfully.";
+      }, (err) => {
+          response['data']['error'] = error;
+      })
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    res.json(response);
+  }
+  catch (e) {
+    next(e);
+  }
 }
