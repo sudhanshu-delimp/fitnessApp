@@ -2,8 +2,8 @@
     <section class="sidebar">
         <ul class="sidebar-menu" data-widget="tree">
           <!-- <li class="header">@lang('main navigation')</li> -->
-          <li class=""><a href="../"><i class="fa fa-tachometer"></i> <span>dashboard</span></a></li>
-          <li class="treeview">
+          <li class="<%= main_module == '' ? 'active' : '' %>"><a href="../"><i class="fa fa-tachometer"></i> <span>dashboard</span></a></li>
+          <li class="treeview <%= main_module == 'users' ? 'active' : '' %>">
           <a href="#">
           <i class="fa fa-users"></i> <span>Users</span>
           <span class="pull-right-container">
@@ -11,10 +11,10 @@
           </span>
           </a>
           <ul class="treeview-menu">
-          <li  class=""><a href="../users/manage"><i class="fa fa-circle-o"></i>Manage Users</a></li>
+          <li  class="<%= child_module == 'manage' ? 'active' : '' %>"><a href="../users/manage"><i class="fa fa-circle-o"></i>Manage Users</a></li>
           </ul>
           </li>
-          <li class="treeview">
+          <li class="treeview <%= main_module == 'exercise' ? 'active' : '' %>">
           <a href="#">
           <i class="fa fa-grav"></i> <span>Exercise</span>
           <span class="pull-right-container">
@@ -22,8 +22,8 @@
           </span>
           </a>
           <ul class="treeview-menu">
-          <li  class=""><a href="../exercise/add"><i class="fa fa-circle-o"></i>Add Exercise</a></li>
-          <li  class=""><a href="../exercise/manage"><i class="fa fa-circle-o"></i>Manage Exercises</a></li>
+          <li  class="<%= child_module == 'add' ? 'active' : '' %>"><a href="../exercise/add"><i class="fa fa-circle-o"></i>Add Exercise</a></li>
+          <li  class="<%= child_module == 'manage' ? 'active' : '' %>"><a href="../exercise/manage"><i class="fa fa-circle-o"></i>Manage Exercises</a></li>
           </ul>
           </li>
         </ul>
