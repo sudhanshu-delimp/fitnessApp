@@ -17,6 +17,21 @@ exports.getOtherUserDetail = async (user_id) => {
     })
 }
 
+exports.getOtherUserDetailByEmail = async (email) => {
+  return new Promise((resolve, reject)=>{
+        dbConnection.execute("SELECT * FROM `users` WHERE `email`=?", [email]).then((row) => {
+            if(row[0].length > 0){
+                resolve(row[0][0]);
+            }
+            else{
+              reject("User does not exist.");
+            }
+        }, (err) => {
+            reject(err);
+        })
+    })
+}
+
 exports.emailExist = async (items) => {
   var conditions = this.buildConditionsString(items);
   return new Promise((resolve, reject)=>{

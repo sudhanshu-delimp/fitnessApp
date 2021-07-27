@@ -105,31 +105,41 @@ exports.user_login = async (req, res, next) => {
     const errors = validationResult(req);
     var error = [];
     var response = {};
+    var account;
     response['status'] = '0';
     response['data'] = {};
     if (!errors.isEmpty()) {
       error.push(errors.array()[0].msg);
     }
     else{
-      const [row] = await dbConnection.execute('SELECT * FROM `users` WHERE `email`=?', [req.body.email]);
-      if (row.length != 1) {
-          error.push('Email address does not exist.');
-      }
-      else{
-        const checkPass = await bcrypt.compare(req.body.password, row[0].password);
-        if (checkPass !== true) {
-            error.push('Invalid Password.');
+      var fields = {};
+      fields['email = ?'] = req.body.email;
+      await helper_general.emailExist(fields).then(result=>{
+        if(!result){
+            error.push('Email address does not exist.');
         }
-      }
+      });
+
+      await helper_general.getOtherUserDetailByEmail(req.body.email).then(async (user)=>{
+        if(user){
+          account = user;
+          const checkPass = await bcrypt.compare(req.body.password, user.password);
+          if (checkPass !== true) {
+            error.push('Invalid Password.');
+          }
+        }
+      }, err => {
+        error.push(err);
+      });
     }
     try {
       if(error.length == 0){
-        const [row] = await dbConnection.execute('SELECT id,name,phone,email FROM `users` WHERE `email`=?', [req.body.email]);
-        var token = jwt.sign({ id: row[0].id,email: row[0].email,phone: row[0].phone}, process.env.JWT_SECRET_KEY, {
+        //const [row] = await dbConnection.execute('SELECT id,name,phone,email FROM `users` WHERE `email`=?', [req.body.email]);
+        var token = jwt.sign({ id: account.id,email: account.email,phone: account.phone}, process.env.JWT_SECRET_KEY, {
           expiresIn: 86400 // 24 hours
         });
         response['status'] = '1';
-        response['data']['user'] = row[0];
+        response['data']['user'] = account;
         response['data']['accessToken'] = token;
       }
       else{
