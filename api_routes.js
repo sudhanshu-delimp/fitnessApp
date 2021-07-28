@@ -20,6 +20,14 @@ const {
     getExerciseListing,
 } = require("./controllers/api/appExerciseController");
 
+const {
+    add_equipment,
+    getEquipmentDetail,
+    updateEquipment,
+    deleteEquipment,
+    getEquipmentListing,
+} = require("./controllers/api/appEquipmentController");
+
 router.post("/api/login",
     [
         body("email", "Invalid email address.")
@@ -235,5 +243,95 @@ router.post(
       helper_general.verifyToken
     ],
     getExerciseListing
+);
+
+
+router.post("/api/add_equipment",
+    [
+      helper_general.verifyToken,
+      body("title", "The title must be of minimum 3 characters length")
+          .notEmpty()
+          .escape()
+          .trim(),
+      body("description", "Invalid description")
+          .notEmpty()
+          .escape()
+          .trim()
+          .isLength({ min: 10 }),
+      body("image").custom((value, { req })=>{
+          let uploadedFile = req.files.image;
+          if(uploadedFile.name !== ''){
+            let fileExtension = uploadedFile.mimetype.split('/')[1];
+            const allowedExtension = ["jpeg", "png", "jpg"];
+            if(allowedExtension.indexOf(fileExtension) < 0){
+                throw new Error('File format is not allowed, use only jpeg and png.');
+            }
+          }
+          else{
+            throw new Error('Uplaod image is required.');
+          }
+          return true;
+      }),
+      ],
+    add_equipment
+);
+
+router.post("/api/get-equipment-detail",
+[
+  helper_general.verifyToken,
+  body("id", "Invalid equipment id.")
+  .notEmpty()
+  .escape()
+  .trim(),
+],
+getEquipmentDetail
+);
+
+router.post(
+    "/api/update_equipment",
+    [
+      helper_general.verifyToken,
+      body("title", "The title must be of minimum 3 characters length")
+          .notEmpty()
+          .escape()
+          .trim(),
+      body("description", "Invalid description")
+          .notEmpty()
+          .escape()
+          .trim()
+          .isLength({ min: 10 }),
+      body("image").custom((value, { req })=>{
+          if(req.files!==null){
+            let uploadedFile = req.files.image;
+            let fileExtension = uploadedFile.mimetype.split('/')[1];
+            const allowedExtension = ["jpeg", "png", "jpg"];
+            if(allowedExtension.indexOf(fileExtension) < 0){
+                throw new Error('File format is not allowed, use only jpeg and png.');
+            }
+          }
+          return true;
+      }),
+      ],
+    updateEquipment
+);
+
+router.post(
+    "/api/delete_equipment",
+    [
+      helper_general.verifyToken,
+      body("id", "Invalid id.")
+      .notEmpty()
+      .escape()
+      .trim(),
+    ],
+    deleteEquipment
+);
+
+router.post(
+    "/api/get-equipment-listing",
+    [
+      helper_general.verifyToken
+    ],
+    getEquipmentListing
 );
 module.exports = router;

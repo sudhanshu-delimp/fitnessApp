@@ -22,6 +22,13 @@ const {
     deleteExercise,
 } = require("./controllers/exerciseController");
 
+const {
+    addEquipmentPage,
+    equipmentListingPage,
+    getEquipments,
+    deleteEquipment,
+} = require("./controllers/equipmentController");
+
 const ifNotLoggedin = (req, res, next) => {
     if(!req.session.userID){
         return res.redirect('/login');
@@ -151,4 +158,12 @@ router.post(
     getExercises
 );
 router.post('/exercise/delete-exercise', ifNotLoggedin, deleteExercise);
+
+router.get("/equipment/add", ifNotLoggedin, addEquipmentPage);
+router.get("/equipment/manage", ifNotLoggedin, equipmentListingPage);
+router.post(
+    "/equipment/get-equipments",
+    getEquipments
+);
+router.post('/equipment/delete-equipment', ifNotLoggedin, deleteEquipment);
 module.exports = router;

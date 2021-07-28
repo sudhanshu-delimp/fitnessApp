@@ -26,6 +26,18 @@
           <li  class="<%= child_module == 'manage' ? 'active' : '' %>"><a href="../exercise/manage"><i class="fa fa-circle-o"></i>Manage Exercises</a></li>
           </ul>
           </li>
+          <li class="treeview <%= main_module == 'equipment' ? 'active' : '' %>">
+          <a href="#">
+          <i class="fa fa-life-ring"></i> <span>Equipment</span>
+          <span class="pull-right-container">
+          <i class="fa fa-angle-left pull-right"></i>
+          </span>
+          </a>
+          <ul class="treeview-menu">
+          <li  class="<%= child_module == 'add' ? 'active' : '' %>"><a href="../equipment/add"><i class="fa fa-circle-o"></i>Add Equipment</a></li>
+          <li  class="<%= child_module == 'manage' ? 'active' : '' %>"><a href="../equipment/manage"><i class="fa fa-circle-o"></i>Manage Equipment</a></li>
+          </ul>
+          </li>
         </ul>
       </section>
   </aside>
