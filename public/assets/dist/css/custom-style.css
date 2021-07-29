@@ -244,8 +244,7 @@ p.login-box-msg {
     color: #342c2a;
 }
 .main-header span.logo-lg img {
-    max-width: 75%;
-    border: 2px solid white;
+    max-width: 23%;
     padding: 2px;
 }
 .main-header span.logo-mini img {

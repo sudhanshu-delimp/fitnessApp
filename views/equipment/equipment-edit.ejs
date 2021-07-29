@@ -31,17 +31,21 @@
           </div>
         </div>
         <div class="col-md-3">
-          <div class="box box-primary box-solid">
-            <div class="box-header with-border">
-              <h3 class="box-title">Upload Image</h3>
-            </div>
-            <div class="box-body">
-              <div class="row">
-                <div class="col-sm-12">
-                  <img class="img-responsive current-image" src="/uploads/equipment/thumb/<%= equipment.image %>" alt="Photo">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="box box-primary box-solid">
+                <div class="box-header with-border">
+                  <h3 class="box-title">Upload Image</h3>
+                </div>
+                <div class="box-body">
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <img class="img-responsive current-image" src="/uploads/equipment/thumb/<%= equipment.image %>" alt="Photo">
+                    </div>
+                  </div>
+                  <input class="form-control" type="file" name="image" id="image" value="">
                 </div>
               </div>
-              <input class="form-control" type="file" name="image" id="image" value="">
             </div>
           </div>
         </div>

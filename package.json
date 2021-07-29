@@ -23,6 +23,8 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.2.5",
     "node-fetch": "^2.6.1",
+    "qrcode": "^1.4.4",
+    "qrcode-svg": "^1.1.0",
     "req-flash": "0.0.3",
     "sharp": "^0.28.3"
   }

@@ -1,6 +1,8 @@
 const dbConnection = require("../utils/dbConnection");
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
+const fs = require('fs');
+var QRCode = require("qrcode");
 
 exports.getOtherUserDetail = async (user_id) => {
   return new Promise((resolve, reject)=>{
@@ -215,4 +217,29 @@ return {
   fields: fields.length ? fields.join(',') : '1',
   values: values
 };
+}
+
+exports.createQrCode = async (string) => {
+  return new Promise((resolve, reject)=>{
+    let stringdata = JSON.stringify(string);
+    let opts = {
+      errorCorrectionLevel: 'H',
+      type: 'image/png',
+      quality: 1,
+      margin: 4
+    }
+    QRCode.toDataURL(stringdata,opts, function (err, code) {
+    if(err){
+      console.log("error occurred QRCode");
+      reject(err);
+    }
+    let base64Image = code.split(';base64,').pop();
+    var file_name = Date.now()+'_'+string.id+'.png';
+    fs.writeFile('public/uploads/equipment/qr_code/'+file_name, base64Image, {encoding: 'base64'}, function(err) {
+    console.log('File created');
+    });
+    console.log(code);
+    resolve(file_name);
+    });
+  });
 }

@@ -39,8 +39,21 @@ exports.add_equipment = async (req, res, next) => {
       var sql = "INSERT INTO `equipments`("+conditions.inserts+") VALUES("+conditions.fields+")";
       await dbConnection.execute(sql,conditions.values).then((row) => {
         //ResultSetHeader
+        let insertId = row[0]['insertId'];
         response['status'] = '1';
         response['data']['message'] = "Data has been added successfully.";
+        helper_general.createQrCode({"id":insertId}).then(async (code)=>{
+            var where = {};
+            var update = {};
+            where['id = ?'] = insertId;
+            update['qr_code = ?'] = code;
+            var conditions = helper_general.buildUpdateConditionsString(update, where);
+            var sql = "UPDATE `equipments` SET "+conditions.updates+" WHERE "+conditions.where;
+            await dbConnection.execute(sql,conditions.values);
+        },(err)=>{
+          error.push(err);
+          response['data']['error'] = error;
+        });
       }, (err) => {
           response['data']['error'] = error;
       })
