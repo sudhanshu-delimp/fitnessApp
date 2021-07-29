@@ -198,6 +198,7 @@ exports.deleteEquipment = async (req, res, next) => {
       old_image =  row.image;
       await helper_image.removeImage(`public/uploads/equipment/${old_image}`);
       await helper_image.removeImage(`public/uploads/equipment/thumb/${old_image}`);
+      await helper_image.removeImage(`public/uploads/equipment/qr_code/${row.qr_code}`);
     },
     err=>{
       error.push(err);
