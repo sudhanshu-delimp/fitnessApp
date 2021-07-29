@@ -42,7 +42,7 @@ exports.add_equipment = async (req, res, next) => {
         let insertId = row[0]['insertId'];
         response['status'] = '1';
         response['data']['message'] = "Data has been added successfully.";
-        helper_general.createQrCode({"id":insertId}).then(async (code)=>{
+        helper_general.createQrCode({"id":insertId,"source":"equipments"}).then(async (code)=>{
             var where = {};
             var update = {};
             where['id = ?'] = insertId;
