@@ -271,3 +271,44 @@ exports.getEquipmentListing = async (req, res, next) => {
     next(e);
   }
 }
+
+exports.getEquipmentRelatedExercises = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+  try {
+    if(error.length == 0){
+      var sql = "SELECT exercises.id,exercises.image,exercises.title,exercises.duration FROM `equipments_exercises` LEFT JOIN `exercises` ON (equipments_exercises.exercise_id = exercises.id) WHERE equipments_exercises.equipment_id = ?";
+      await dbConnection.execute(sql,[req.body.id]).then((row) => {
+          row = JSON.parse(JSON.stringify(row));
+          if(row[0].length > 0){
+            row[0].forEach(function(item,index){
+              row[0][index]['image_original_path'] = '/uploads/exercise/'+item.image;
+              row[0][index]['image_thumb_path'] = '/uploads/exercise/thumb/'+item.image;
+            });
+            response['status'] = '1';
+            response['data']['exercises'] = row[0];
+          }
+          else{
+            error.push("data does not exist");
+            response['data']['error'] = error;
+          }
+      }, (err) => {
+          error.push(err);
+          response['data']['error'] = error;
+      })
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    res.json(response);
+  }
+  catch (e) {
+    next(e);
+  }
+}

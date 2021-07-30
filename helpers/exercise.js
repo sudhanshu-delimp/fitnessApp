@@ -12,7 +12,14 @@ exports.getExercises = async (req, res, next) => {
         where['title LIKE ?'] = "%" + req.body.title + "%";
       }
       var conditions = helper_general.buildConditionsString(where);
-      var sql = "SELECT * FROM `exercises` WHERE "+conditions.where;
+      var sql;
+      if(req.body.equipment_id!==undefined){
+        sql = "SELECT exercises.*,equipments_exercises.id as equipments_exercises_id  FROM `exercises`";
+        sql+=" LEFT JOIN equipments_exercises ON (exercises.id = equipments_exercises.exercise_id && equipments_exercises.equipment_id = "+req.body.equipment_id+") WHERE "+conditions.where;
+      }
+      else{
+        sql = "SELECT exercises.* FROM `exercises` WHERE "+conditions.where;
+      }
       sql+=" ORDER BY "+order+" "+dir+" LIMIT "+limit+" OFFSET "+offset;
       dbConnection.execute(sql,conditions.values).then((row) => {
           row = JSON.parse(JSON.stringify(row));
@@ -26,7 +33,7 @@ exports.getExercises = async (req, res, next) => {
 exports.getExercisesCount = async (req, res, next) => {
   return new Promise((resolve, reject)=>{
     var where = {};
-    if(req.body.title!==''){
+    if(req.body.title!==undefined){
       where['title LIKE ?'] = "%" + req.body.title + "%";
     }
     var conditions = helper_general.buildConditionsString(where);

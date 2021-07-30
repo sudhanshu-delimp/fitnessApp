@@ -186,6 +186,23 @@
         }
         });
     }
+
+    var uploadVideo = function(element){
+      var id = $(element).attr('data-id');
+      $.ajax({
+        type: 'POST',
+        url: "upload-video",
+        data: {id:id},
+        beforeSend: function(){
+          $("#modal-edit .modal-body").html('<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>');
+          $(".modal-dialog").addClass('modal-lg');
+          $("#modal-edit").modal('toggle');
+        },
+        success: function(response) {
+          $("#modal-edit .modal-content").html(response);
+        }
+        });
+    }
 </script>
 
 </body>

@@ -289,7 +289,7 @@ exports.registerPage = (req, res, next) => {
 
   // User Listing Page
 exports.userListingPage = async (req, res, next) => {
-  
+
   res.render('users/user-listing', {
       title: 'Welcome to Fitness | Users',
       page_title: 'Manage Users'

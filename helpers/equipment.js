@@ -62,3 +62,19 @@ exports.getEquipmentDetail = async (id = '') => {
     })
   });
 }
+
+exports.isExerciseAssigned = async (exercise_id) => {
+  return new Promise((resolve, reject)=>{
+    var where = {};
+    //where['equipment_id = ?'] = equipment_id;
+    where['exercise_id = ?'] = exercise_id;
+    var conditions = helper_general.buildConditionsString(where);
+    var sql = "SELECT id FROM `equipments_exercises`  WHERE "+conditions.where;
+    dbConnection.execute(sql,conditions.values).then((row) => {
+        console.log("exercise_id: "+row[0].length);
+        resolve(row[0].length);
+    }, (err) => {
+        reject(err);
+    })
+  });
+}

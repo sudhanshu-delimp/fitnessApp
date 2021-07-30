@@ -26,7 +26,13 @@ const {
     updateEquipment,
     deleteEquipment,
     getEquipmentListing,
+    getEquipmentRelatedExercises,
 } = require("./controllers/api/appEquipmentController");
+
+const {
+    uploadVideo,
+    deleteVideo,
+} = require("./controllers/api/appVideoController");
 
 router.post("/api/login",
     [
@@ -160,7 +166,7 @@ router.post("/api/add_exercise",
           if(uploadedFile.name !== ''){
             let fileExtension = uploadedFile.mimetype.split('/')[1];
             const allowedExtension = ["jpeg", "png", "jpg"];
-            if(allowedExtension.indexOf(fileExtension) < 0){
+            if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
                 throw new Error('File format is not allowed, use only jpeg and png.');
             }
           }
@@ -215,7 +221,7 @@ router.post(
             let uploadedFile = req.files.image;
             let fileExtension = uploadedFile.mimetype.split('/')[1];
             const allowedExtension = ["jpeg", "png", "jpg"];
-            if(allowedExtension.indexOf(fileExtension) < 0){
+            if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
                 throw new Error('File format is not allowed, use only jpeg and png.');
             }
           }
@@ -263,7 +269,7 @@ router.post("/api/add_equipment",
           if(uploadedFile.name !== ''){
             let fileExtension = uploadedFile.mimetype.split('/')[1];
             const allowedExtension = ["jpeg", "png", "jpg"];
-            if(allowedExtension.indexOf(fileExtension) < 0){
+            if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
                 throw new Error('File format is not allowed, use only jpeg and png.');
             }
           }
@@ -305,7 +311,7 @@ router.post(
             let uploadedFile = req.files.image;
             let fileExtension = uploadedFile.mimetype.split('/')[1];
             const allowedExtension = ["jpeg", "png", "jpg"];
-            if(allowedExtension.indexOf(fileExtension) < 0){
+            if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
                 throw new Error('File format is not allowed, use only jpeg and png.');
             }
           }
@@ -334,4 +340,77 @@ router.post(
     ],
     getEquipmentListing
 );
+
+router.post(
+    "/api/get-equipment-related-exercises",
+    [
+      helper_general.verifyToken,
+      body("id", "Invalid id.")
+      .notEmpty()
+      .escape()
+      .trim(),
+    ],
+    getEquipmentRelatedExercises
+);
+
+router.post(
+    "/api/upload-video",
+    [
+      helper_general.verifyToken,
+      body("title", "The title must be of minimum 3 characters length")
+          .notEmpty()
+          .escape()
+          .trim(),
+      body("source_id", "Invalid id.")
+      .notEmpty()
+      .escape()
+      .trim(),
+      body("type", "Invalid type.")
+      .notEmpty()
+      .escape()
+      .trim(),
+      body("thumb_image").custom((value, { req })=>{
+        let uploadedFile = req.files.thumb_image;
+        if(uploadedFile.name !== ''){
+          let fileExtension = uploadedFile.mimetype.split('/')[1];
+            const allowedExtension = ["jpeg", "png", "jpg"];
+            if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
+                throw new Error('Thumb image File format is not allowed, use only jpeg and png.');
+            }
+        }
+        else{
+          throw new Error('Uplaod Thumb image is required.');
+        }
+        return true;
+    }),
+    body("video").custom((value, { req })=>{
+    let uploadedFile = req.files.video;
+    if(uploadedFile.name !== ''){
+        let fileExtension = uploadedFile.mimetype.split('/')[1];
+        const allowedExtension = ["mp4"];
+        if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
+            throw new Error('Video File format is not allowed, use only mp4.');
+        }
+    }
+    else{
+        throw new Error('Uplaod Video is required.');
+    }
+    return true;
+    }),
+    ],
+    uploadVideo
+);
+
+router.post(
+    "/api/delete_video",
+    [
+      helper_general.verifyToken,
+      body("id", "Invalid id.")
+      .notEmpty()
+      .escape()
+      .trim(),
+    ],
+    deleteVideo
+);
+
 module.exports = router;

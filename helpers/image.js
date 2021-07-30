@@ -1,5 +1,6 @@
-const fs = require('fs')
-const sharp = require('sharp')
+const fs = require('fs');
+const path = require('path');
+const sharp = require('sharp');
 
 exports.resizeLargeFile =  async (original_path, destination_path, width, height) => {
   return new Promise(async (resolve, reject)=>{
@@ -68,6 +69,32 @@ exports.isFileExist =  async (file_path) => {
       else{
         resolve(false);
       }
+    } catch(err) {
+      console.error(err);
+      reject(err);
+    }
+  });
+}
+
+exports.createDirectories = async (paths) => {
+  return new Promise((resolve, reject)=>{
+    try {
+      paths.forEach(function(pathname , index){
+        if (fs.existsSync(pathname)) {
+          resolve('already exist Directory');
+        }
+        else{
+          const __dirname = path.resolve();
+          pathname = pathname.replace(/^\.*\/|\/?[^\/]+\.[a-z]+|\/$/g, ''); // Remove leading directory markers, and remove ending /file-name.extension
+          fs.mkdir(path.resolve(__dirname, pathname), { recursive: true }, e => {
+              if (e) {
+                  reject(e);
+              } else {
+                  resolve('Success create Directory');
+              }
+           });
+        }
+      });
     } catch(err) {
       console.error(err);
       reject(err);
