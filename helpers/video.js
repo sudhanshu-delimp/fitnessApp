@@ -21,6 +21,7 @@ exports.uploadFile =  async (file,destination_path) => {
       // Uploading files to the bucket
       s3.upload(params, function(err, data) {
           if (err) {
+              console.error(err);
               reject(err);
           }
           resolve(data.Location);
