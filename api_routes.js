@@ -383,20 +383,20 @@ router.post(
         }
         return true;
     }),
-    // body("video").custom((value, { req })=>{
-    // let uploadedFile = req.files.video;
-    // if(uploadedFile.name !== ''){
-    //     let fileExtension = uploadedFile.mimetype.split('/')[1];
-    //     const allowedExtension = ["mp4"];
-    //     if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
-    //         throw new Error('Video File format is not allowed, use only mp4.');
-    //     }
-    // }
-    // else{
-    //     throw new Error('Uplaod Video is required.');
-    // }
-    // return true;
-    // }),
+    body("video").custom((value, { req })=>{
+    let uploadedFile = req.files.video;
+    if(uploadedFile.name !== ''){
+        let fileExtension = uploadedFile.mimetype.split('/')[1];
+        const allowedExtension = ["mp4"];
+        if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
+            throw new Error('Video File format is not allowed, use only mp4.');
+        }
+    }
+    else{
+        throw new Error('Uplaod Video is required.');
+    }
+    return true;
+    }),
     ],
     uploadVideo
 );
