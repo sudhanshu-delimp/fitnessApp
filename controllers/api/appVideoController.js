@@ -212,3 +212,97 @@ exports.updateVideo = async (req, res, next) => {
     next(e);
   }
 }
+
+exports.getEquipmentRelatedVideos = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+
+  try {
+    if(error.length == 0){
+      var where = {};
+        where['source_id = ?'] = req.body.id;
+        where['type = ?'] = 'equipment';
+        var conditions = helper_general.buildConditionsString(where);
+        var sql = "SELECT * FROM `videos`  WHERE "+conditions.where;
+        await dbConnection.execute(sql,conditions.values).then((row) => {
+            if(row[0].length > 0){
+              row[0].forEach(function(item,index){
+                row[0][index]['thumbnail_image_original_path'] =  process.env.BASE_URL+'/uploads/video/equipment/thumbnail_image/'+item.thumb_image;
+                row[0][index]['thumbnail_image_thumb_path'] = process.env.BASE_URL+'/uploads/video/equipment/thumbnail_image/thumb/'+item.thumb_image;
+              });
+              response['status'] = '1';
+              response['data']['videos'] = row[0];
+              response['data']['message'] = "Data found.";
+            }
+            else{
+              error.push('Data not found.');
+              response['data']['error'] = error;
+            }
+        }, (err) => {
+            error.push(err);
+            response['data']['error'] = error;
+        })
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    console.log(response);
+    res.json(response);
+  }
+  catch (e) {
+    next(e);
+  }
+}
+
+exports.getExerciseRelatedVideos = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+
+  try {
+    if(error.length == 0){
+      var where = {};
+        where['source_id = ?'] = req.body.id;
+        where['type = ?'] = 'exercise';
+        var conditions = helper_general.buildConditionsString(where);
+        var sql = "SELECT * FROM `videos`  WHERE "+conditions.where;
+        await dbConnection.execute(sql,conditions.values).then((row) => {
+            if(row[0].length > 0){
+              row[0].forEach(function(item,index){
+                row[0][index]['thumbnail_image_original_path'] =  process.env.BASE_URL+'/uploads/video/exercise/thumbnail_image/'+item.thumb_image;
+                row[0][index]['thumbnail_image_thumb_path'] = process.env.BASE_URL+'/uploads/video/exercise/thumbnail_image/thumb/'+item.thumb_image;
+              });
+              response['status'] = '1';
+              response['data']['videos'] = row[0];
+              response['data']['message'] = "Data found.";
+            }
+            else{
+              error.push('Data not found.');
+              response['data']['error'] = error;
+            }
+        }, (err) => {
+            error.push(err);
+            response['data']['error'] = error;
+        })
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    console.log(response);
+    res.json(response);
+  }
+  catch (e) {
+    next(e);
+  }
+}

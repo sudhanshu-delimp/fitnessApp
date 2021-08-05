@@ -26,7 +26,7 @@ exports.add_exercise = async (req, res, next) => {
         return res.status(500).send(err);
         error.push(err);
       }
-      helper_image.resize(`public/uploads/exercise/${image_name}`,`public/uploads/exercise/thumb/${image_name}`,300,300);
+      helper_image.resizeLargeFile(`public/uploads/exercise/${image_name}`,`public/uploads/exercise/thumb/${image_name}`,300,300);
     });
   }
   try {

@@ -15,7 +15,7 @@ exports.resizeLargeFile =  async (original_path, destination_path, width, height
      reject("Successfully saved file");
     });
     let transform = await sharp()
-    .resize({ width: 300, height: 300 })
+    .resize({ width: 300, height: 300, fit: 'fill' })
     .on('info', function(fileInfo) {
     console.log("Resizing done, file saved");
     resolve("Resizing done, file saved");
@@ -26,7 +26,7 @@ exports.resizeLargeFile =  async (original_path, destination_path, width, height
 
 exports.resize =  async (original_path, destination_path, width, height) => {
   return new Promise(async (resolve, reject)=>{
-    await sharp(original_path).resize({ height: 300, width: 300 }).toFile(destination_path)
+    await sharp(original_path).resize({ height: 300, width: 300, fit: 'fill' }).toFile(destination_path)
     .then(function(newFileInfo) {
       console.log("Success in resize");
       resolve("Success in resize");

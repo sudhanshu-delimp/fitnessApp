@@ -33,6 +33,8 @@ const {
     uploadVideo,
     deleteVideo,
     updateVideo,
+    getEquipmentRelatedVideos,
+    getExerciseRelatedVideos,
 } = require("./controllers/api/appVideoController");
 
 router.post("/api/login",
@@ -450,16 +452,28 @@ router.post(
     updateVideo
 );
 
-// router.post(
-//     "/api/get-equipment-related-videos",
-//     [
-//       helper_general.verifyToken,
-//       body("id", "Invalid id.")
-//       .notEmpty()
-//       .escape()
-//       .trim(),
-//     ],
-//     getEquipmentRelatedVideos
-// );
+router.post(
+    "/api/get-equipment-related-videos",
+    [
+      helper_general.verifyToken,
+      body("id", "Invalid id.")
+      .notEmpty()
+      .escape()
+      .trim(),
+    ],
+    getEquipmentRelatedVideos
+);
+
+router.post(
+    "/api/get-exercise-related-videos",
+    [
+      helper_general.verifyToken,
+      body("id", "Invalid id.")
+      .notEmpty()
+      .escape()
+      .trim(),
+    ],
+    getExerciseRelatedVideos
+);
 
 module.exports = router;
