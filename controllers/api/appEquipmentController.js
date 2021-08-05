@@ -289,8 +289,8 @@ exports.getEquipmentRelatedExercises = async (req, res, next) => {
           row = JSON.parse(JSON.stringify(row));
           if(row[0].length > 0){
             row[0].forEach(function(item,index){
-              row[0][index]['image_original_path'] = '/uploads/exercise/'+item.image;
-              row[0][index]['image_thumb_path'] = '/uploads/exercise/thumb/'+item.image;
+              row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+item.image;
+              row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/thumb/'+item.image;
             });
             response['status'] = '1';
             response['data']['exercises'] = row[0];

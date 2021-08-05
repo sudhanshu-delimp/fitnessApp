@@ -57,8 +57,8 @@ exports.getExerciseDetail = async (id = '') => {
     dbConnection.execute(sql,conditions.values).then((row) => {
         row = JSON.parse(JSON.stringify(row));
         if(row[0].length > 0){
-            row[0][0]['image_original_path'] = '/uploads/exercise/'+row[0][0]['image'];
-            row[0][0]['image_thumb_path'] = '/uploads/exercise/thumb/'+row[0][0]['image'];
+            row[0][0]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+row[0][0]['image'];
+            row[0][0]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/thumb/'+row[0][0]['image'];
             resolve(row[0][0]);
         }
         else{
