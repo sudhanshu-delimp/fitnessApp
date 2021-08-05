@@ -23,6 +23,7 @@ const {
     exerciseUploadVideo,
     getExerciseVideos,
     deleteExerciseVideo,
+    updateExerciseVideo,
 } = require("./controllers/exerciseController");
 
 const {
@@ -36,6 +37,7 @@ const {
     equipmentUploadVideo,
     getEquipmentVideos,
     deleteEquipmentVideo,
+    updateEquipmentVideo,
 } = require("./controllers/equipmentController");
 
 const ifNotLoggedin = (req, res, next) => {
@@ -190,6 +192,7 @@ router.post(
     getEquipmentVideos
 );
 router.post('/equipment/delete-video', ifNotLoggedin, deleteEquipmentVideo);
+router.post('/equipment/update-video', ifNotLoggedin, updateEquipmentVideo);
 
 router.post('/exercise/upload-video', ifNotLoggedin, exerciseUploadVideo);
 router.post(
@@ -197,4 +200,5 @@ router.post(
     getExerciseVideos
 );
 router.post('/exercise/delete-video', ifNotLoggedin, deleteExerciseVideo);
+router.post('/exercise/update-video', ifNotLoggedin, updateExerciseVideo);
 module.exports = router;

@@ -240,8 +240,9 @@ exports.getExerciseListing = async (req, res, next) => {
         if(row.length > 0){
           response['status'] = '1';
           row.forEach(function(item,index){
-            row[index]['image_original_path'] = '/uploads/exercise/'+item.image;
-            row[index]['image_thumb_path'] = '/uploads/exercise/thumb/'+item.image;
+            row[index]['description'] = item.description.substr(0, 150);
+            row[index]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+item.image;
+            row[index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/thumb/'+item.image;
           });
           response['data']['exercises'] = row;
         }

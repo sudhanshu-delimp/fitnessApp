@@ -82,7 +82,7 @@
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal2" aria-label="Close">
             <span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Job Detail</h4>
+            <h4 class="modal-title">Title</h4>
         </div>
         <div class="modal-body text-center">
 
@@ -95,7 +95,7 @@
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary  main-btn pull-right" data-dismiss="modal2">Close</button>
+  <button type="button" class="btn btn-primary  main-btn pull-right" data-dismiss="modal">Close</button>
 </div>
 <script type="text/javascript">
   var exercise_table;
@@ -164,8 +164,42 @@
       });
   }
 
+  var playVideoModal = function(element){
+    var video_url = $(element).attr('video-url');
+    var poster_url = $(element).attr('poster-url');
+    var video_title = $(element).attr('video-title');
+    var video_tag = '<div class="fullscreen-bg"><video width="400" height="300" controls class="controls img-responsive fullscreen-bg__video" controls controlsList="nodownload" webkittallowfullscreen mozallowfullscreen allowfullscreen >';
+    video_tag += '<source src="'+video_url+'" type="video/mp4">';
+    video_tag += '</video></div>';
+    $("#video-modal-edit .modal-title").html(video_title);
+    $("#video-modal-edit .modal-body").html(video_tag);
+    $("#video-modal-edit").modal('toggle');
+  }
+
   $("button[data-dismiss=modal2]").click(function(){
-    console.log("ok work");
     $('#video-modal-edit').modal('toggle');
 });
+
+$('#video-modal-edit,.modal').modal({
+    show: false
+}).on('hidden.bs.modal', function(){
+    $(".alert").remove();
+    $(this).find('video')[0].pause();
+});
+
+var editVideo = function(element){
+  var id = $(element).attr('data-id');
+  $.ajax({
+    type: 'POST',
+    url: "update-video",
+    data: {id:id},
+    beforeSend: function(){
+      $("#video-modal-edit .modal-body").html('<i class="fa fa-cog fa-spin fa-3x fa-fw"></i>');
+      $("#video-modal-edit").modal('toggle');
+    },
+    success: function(response) {
+      $("#video-modal-edit .modal-content").html(response);
+    }
+    });
+}
 </script>

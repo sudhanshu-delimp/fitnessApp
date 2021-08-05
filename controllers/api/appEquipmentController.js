@@ -248,8 +248,9 @@ exports.getEquipmentListing = async (req, res, next) => {
         if(row.length > 0){
           response['status'] = '1';
           row.forEach(function(item,index){
-            row[index]['image_original_path'] = '/uploads/equipment/'+item.image;
-            row[index]['image_thumb_path'] = '/uploads/equipment/thumb/'+item.image;
+            row[index]['description'] = item.description.substr(0, 150);
+            row[index]['image_original_path'] =  process.env.BASE_URL+'/uploads/equipment/'+item.image;
+            row[index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/equipment/thumb/'+item.image;
           });
           response['data']['equipments'] = row;
         }

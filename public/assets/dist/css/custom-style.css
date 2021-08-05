@@ -15,6 +15,22 @@ input[type=search] {
 #ui-datepicker-div{
   z-index: 5;
 }
+
+.fullscreen-bg {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: -100;
+}
+
+.fullscreen-bg__video {
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
 #job-comment-container {
     height: auto;
     max-height: 300px;

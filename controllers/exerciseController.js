@@ -44,7 +44,7 @@ exports.getExercises = async (req, res, next) => {
       nestedData['options'] += '<ul class="dropdown-menu">';
       nestedData['options'] += '<li><a onclick="editData(this)" data-id = "'+exercise.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-pencil"></i> Edit</a></li>';
       nestedData['options'] += '<li><a onclick="deleteData(this)" data-id = "'+exercise.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-trash"></i> Delete</a></li>';
-      nestedData['options'] += '<li><a onclick="uploadVideo(this)" data-id = "'+exercise.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-play"></i>Videos</a></li>';
+      nestedData['options'] += '<li><a onclick="uploadVideo(this)" data-id = "'+exercise.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-play"></i>Videos</a></li>';
       nestedData['options'] += '</ul>';
       nestedData['options'] += '</div>';
       data.push(nestedData);
@@ -118,9 +118,8 @@ exports.getExerciseVideos = async (req, res, next) => {
       var nestedData = {};
       nestedData['sn'] = helper_general.getSerialNumber(req.body.start, index);
       nestedData['title'] = video.title;
-      nestedData['image'] = '<video controls class="controls img-responsive" controls controlsList="nodownload" webkittallowfullscreen mozallowfullscreen allowfullscreen poster="/uploads/video/exercise/thumbnail_image/thumb/'+video.thumb_image+'">';
-      nestedData['image'] += '<source src="'+video.video+'" type="video/mp4">';
-      nestedData['image'] += '</video>';
+      nestedData['image'] = '<img src="/uploads/video/exercise/thumbnail_image/thumb/'+video.thumb_image+'" video-url="'+video.video+'" class="img-circle" alt="">';
+      nestedData['image'] += '&nbsp;<a href="#" onclick="playVideoModal(this)" video-title="'+video.title+'" video-url="'+video.video+'" poster-url="/uploads/video/exercise/thumbnail_image/thumb/'+video.thumb_image+'"><i class="fa fa-play" aria-hidden="true"></i> <em>play</em></a>';
       nestedData['options'] = '<div class="btn-group">';
       nestedData['options'] += '<button class="btn btn-secondary btn-sm main-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Action</span><span class="caret"></span></button>';
       nestedData['options'] += '<ul class="dropdown-menu">';
@@ -138,4 +137,17 @@ exports.getExerciseVideos = async (req, res, next) => {
     "data" :data
   }
   res.json(json_data);
+}
+
+exports.updateExerciseVideo = async (req, res, next) => {
+  var id = req.body.id;
+  await helper_video.getVideoDetail(id).then(async (row)=>{
+    res.render('exercise/video-edit', {
+        video: row
+    });
+  },err=>{
+    res.render('exercise/video-edit', {
+        error: err
+    });
+  });
 }
