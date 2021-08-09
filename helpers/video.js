@@ -1,4 +1,5 @@
 const dbConnection = require("../utils/dbConnection");
+const axios = require('axios');
 const helper_general = require("./general");
 const AWS = require('aws-sdk');
 
@@ -116,4 +117,21 @@ exports.getVideoDetail = async (id) => {
         reject(err);
     })
   });
+}
+
+exports.deleteRelatedVideos = async (id, type) => {
+    const options = {
+        method: 'post',
+        url:process.env.BASE_URL+'/api/delete_videos',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'x-access-token': accessToken
+        },
+        data: JSON.stringify({
+            id: id,
+            type: type
+        })
+    };
+    return axios(options);
 }

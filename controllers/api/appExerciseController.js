@@ -5,6 +5,7 @@ const helper_email = require("../../helpers/email");
 const helper_general = require("../../helpers/general");
 const helper_exercise = require("../../helpers/exercise");
 const helper_image = require("../../helpers/image");
+const helper_video = require("../../helpers/video");
 
 exports.add_exercise = async (req, res, next) => {
   const errors = validationResult(req);
@@ -204,9 +205,11 @@ exports.deleteExercise = async (req, res, next) => {
       var sql = "DELETE FROM `exercises` WHERE "+conditions.where;
       await dbConnection.execute(sql,conditions.values).then((row) => {
         //ResultSetHeader
+        helper_video.deleteRelatedVideos(req.body.id, 'exercise');
         response['status'] = '1';
         response['data']['message'] = "Data has been deleted successfully.";
       }, (err) => {
+          error.push(err);
           response['data']['error'] = error;
       })
     }

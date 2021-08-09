@@ -69,3 +69,7 @@ exports.getExerciseDetail = async (id = '') => {
     })
   });
 }
+
+exports.deleteExerciseVideos = async (id = '') => {
+  
+}

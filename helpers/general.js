@@ -8,6 +8,8 @@ exports.getOtherUserDetail = async (user_id) => {
   return new Promise((resolve, reject)=>{
         dbConnection.execute("SELECT * FROM `users` WHERE `id`=?", [user_id]).then((row) => {
             if(row[0].length > 0){
+                row[0][0]['image_original_path'] = (row[0][0].image!='')?process.env.BASE_URL+'/uploads/user/'+row[0][0].image:process.env.BASE_URL+'/assets/profile/dummy-profile-image.jpg';
+                row[0][0]['image_thumb_path'] = (row[0][0].image!='')?process.env.BASE_URL+'/uploads/user/thumb/'+row[0][0].image:process.env.BASE_URL+'/assets/profile/dummy-profile-image.jpg';
                 resolve(row[0][0]);
             }
             else{
@@ -23,6 +25,8 @@ exports.getOtherUserDetailByEmail = async (email) => {
   return new Promise((resolve, reject)=>{
         dbConnection.execute("SELECT * FROM `users` WHERE `email`=?", [email]).then((row) => {
             if(row[0].length > 0){
+              row[0][0]['image_original_path'] = (row[0][0].image!='')?process.env.BASE_URL+'/uploads/user/'+row[0][0].image:process.env.BASE_URL+'/assets/profile/dummy-profile-image.jpg';
+              row[0][0]['image_thumb_path'] = (row[0][0].image!='')?process.env.BASE_URL+'/uploads/user/thumb/'+row[0][0].image:process.env.BASE_URL+'/assets/profile/dummy-profile-image.jpg';
                 resolve(row[0][0]);
             }
             else{

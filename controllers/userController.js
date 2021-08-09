@@ -8,7 +8,9 @@ let getUserInfo = (user_id) => {
     return new Promise((resolve, reject)=>{
         dbConnection.execute("SELECT * FROM `users` WHERE `id`=?", [user_id]).then((row) => {
             row = JSON.parse(JSON.stringify(row));
-            resolve(row[0]);
+            row[0][0]['image_original_path'] = (row[0][0].image!='')?process.env.BASE_URL+'/uploads/user/'+row[0][0].image:process.env.BASE_URL+'/assets/profile/dummy-profile-image.jpg';
+            row[0][0]['image_thumb_path'] = (row[0][0].image!='')?process.env.BASE_URL+'/uploads/user/thumb/'+row[0][0].image:process.env.BASE_URL+'/assets/profile/dummy-profile-image.jpg';
+            resolve(row[0][0]);
         }, (err) => {
             reject(err);
         })
@@ -90,7 +92,7 @@ exports.registerPage = (req, res, next) => {
 
         const errors = validationResult(req);
         const { body } = req;
-
+        let user;
         if (!errors.isEmpty()) {
             return res.render('login', {
                 error: errors.array()[0].msg,
@@ -100,44 +102,33 @@ exports.registerPage = (req, res, next) => {
 
         try {
             var errorMessage = '';
-            const [row] = await dbConnection.execute('SELECT * FROM `users` WHERE `email`=?', [body._email]);
-
-            if (row.length != 1) {
-                return res.render('login', {
-                    error: 'Invalid email address.',
-                    title: 'Welcome to Axces | Login'
-                });
-            }
-
-            if (row[0].role !== 'admin') {
-                errorMessage = 'You are not a valid admin user.';
-            }
-
-            const checkPass = await bcrypt.compare(body._password, row[0].password);
-
-            if (checkPass === true && errorMessage === '') {
-                var token = jwt.sign({ id: row[0].id,email: row[0].email,phone: row[0].phone}, process.env.JWT_SECRET_KEY, {
-                  expiresIn: 86400 // 24 hours
-                });
-                req.session.userID = row[0].id;
-                req.session.accessToken = token;
-                global.accessToken = token;
-                global.user = row[0];
-                return res.redirect('/');
-            }
-            else if (errorMessage !== '') {
-                errorMessage = errorMessage;
-            }
-            else {
-                errorMessage = 'Invalid Password.';
-            }
-
-            res.render('login', {
-                error: errorMessage,
-                title: 'Welcome to Axces | Login'
+            await helper_general.getOtherUserDetailByEmail(body._email).then(async (row)=>{
+              if (row.role !== 'admin') {
+                  errorMessage = 'You are not a valid admin user.';
+              }
+              const checkPass = await bcrypt.compare(body._password, row.password);
+              if (checkPass === true && errorMessage === '') {
+                  var token = jwt.sign({ id: row.id,email: row.email,phone: row.phone}, process.env.JWT_SECRET_KEY, {
+                    expiresIn: 86400 // 24 hours
+                  });
+                  console.log(row);
+                  req.session.userID = row.id;
+                  req.session.accessToken = token;
+                  global.accessToken = token;
+                  global.user = row;
+                  return res.redirect('/');
+              }
+              else if (errorMessage !== '') {
+                  errorMessage = errorMessage;
+              }
+              else {
+                  errorMessage = 'Invalid Password.';
+              }
+              res.render('login', {
+                  error: errorMessage,
+                  title: 'Welcome to Axces | Login'
+              });
             });
-
-
         }
         catch (e) {
             next(e);
@@ -157,7 +148,6 @@ exports.registerPage = (req, res, next) => {
         const errors = validationResult(req);
         const { body } = req;
         if (!errors.isEmpty()) {
-            let data = await getUserInfo(req.session.userID);
             return res.render('profile', {
                 error: errors.array()[0].msg,
                 title: 'Welcome to Axces | Profile',
@@ -192,7 +182,8 @@ exports.registerPage = (req, res, next) => {
                 }
             }
             let data = await getUserInfo(req.session.userID);
-            global.user = data[0];
+            console.log(data);
+            global.user = data;
             res.render("profile", {
                 msg: 'Your Profile has been updated successfully.',
                 title: 'Welcome to Axces | Profile',

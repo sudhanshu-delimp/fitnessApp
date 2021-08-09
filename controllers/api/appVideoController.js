@@ -37,7 +37,7 @@ exports.uploadVideo = async (req, res, next) => {
       let uploadedFile = req.files.video;
       let fileExtension = uploadedFile.mimetype.split('/')[1];
       video_file_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
-      await helper_video.uploadFile(req.files.video.data,'equipment/'+video_file_name).then((fileUrl)=>{
+      await helper_video.uploadFile(req.files.video.data,req.body.type+'/'+video_file_name).then((fileUrl)=>{
         video_file_url = fileUrl;
       },(err)=>{
         error.push(err);
@@ -300,6 +300,63 @@ exports.getExerciseRelatedVideos = async (req, res, next) => {
       response['data']['error'] = error;
     }
     console.log(response);
+    res.json(response);
+  }
+  catch (e) {
+    next(e);
+  }
+}
+
+exports.deleteVideos = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+  try {
+    if(error.length == 0){
+      var where = {};
+        where['source_id = ?'] = req.body.id;
+        where['type = ?'] = req.body.type;
+        var conditions = helper_general.buildConditionsString(where);
+        var sql = "SELECT * FROM `videos`  WHERE "+conditions.where;
+        await dbConnection.execute(sql,conditions.values).then(async (row) => {
+          if(row[0].length > 0){
+            var videos = row[0];
+              await videos.forEach(async function(video,index){
+                old_image =  video.thumb_image;
+                helper_image.removeImage(`public/uploads/video/${video.type}/thumbnail_image/${old_image}`);
+                helper_image.removeImage(`public/uploads/video/${video.type}/thumbnail_image/thumb/${old_image}`);
+                await helper_video.deleteFile(video.video).then(async (res)=>{
+                  var where = {};
+                  where['id = ?'] = video.id;
+                  var conditions = helper_general.buildDeleteConditionsString(where);
+                  var sql = "DELETE FROM `videos` WHERE "+conditions.where;
+                  await dbConnection.execute(sql,conditions.values).then((row) => {
+                    //ResultSetHeader
+                    console.log(video.video);
+                  }, (err) => {
+                      response['data']['error'] = error;
+                  })
+                },err=>{
+                  error.push(err);
+                });
+              });
+              response['status'] = '1';
+              response['data']['message'] = "Data has been deleted successfully.";
+          }
+          else{
+            error.push('No videos found.');
+            response['data']['error'] = error;
+          }
+        });
+    }
+    else{
+      response['data']['error'] = error;
+    }
     res.json(response);
   }
   catch (e) {

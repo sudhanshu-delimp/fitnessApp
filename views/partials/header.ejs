@@ -16,12 +16,12 @@
           <ul class="nav navbar-nav">
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <img src="/assets/profile/dummy-profile-image.jpg" class="user-image" alt="User Image">
+                <img src="<%= user.image_thumb_path %>" class="user-image" alt="User Image">
                 <span class="hidden-xs"><strong><%= user.name %></strong></span>
               </a>
               <ul class="dropdown-menu">
                 <li class="user-header">
-                  <img src="/assets/profile/dummy-profile-image.jpg" class="img-circle" alt="User Image">
+                  <img src="<%= user.image_thumb_path %>" class="img-circle" alt="User Image">
                   <p><%= user.name %></p>
                 </li>
                 <li class="user-footer">
