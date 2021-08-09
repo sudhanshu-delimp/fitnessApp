@@ -7,14 +7,14 @@ const helper_exercise = require("../helpers/exercise");
 const helper_video = require("../helpers/video");
 exports.addExercisePage = async (req, res, next) => {
     res.render('exercise/add', {
-        title: 'Welcome to Fitness | Add Exercise',
+        title: 'Welcome to Axces | Add Exercise',
         page_title:'Add Exercise'
     });
 }
 
 exports.exerciseListingPage = async (req, res, next) => {
     res.render('exercise/listing', {
-        title: 'Welcome to Fitness | Manage Exercises',
+        title: 'Welcome to Axces | Manage Exercises',
         page_title:'Manage Exercises'
     });
 }

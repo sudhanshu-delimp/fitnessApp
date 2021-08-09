@@ -9,14 +9,14 @@ const helper_video = require("../helpers/video");
 
 exports.addEquipmentPage = async (req, res, next) => {
     res.render('equipment/add', {
-        title: 'Welcome to Fitness | Add Equipment',
+        title: 'Welcome to Axces | Add Equipment',
         page_title:'Add Equipment'
     });
 }
 
 exports.equipmentListingPage = async (req, res, next) => {
     res.render('equipment/listing', {
-        title: 'Welcome to Fitness | Manage Equipment',
+        title: 'Welcome to Axces | Manage Equipment',
         page_title:'Manage Equipment'
     });
 }

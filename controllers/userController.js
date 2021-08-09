@@ -17,14 +17,14 @@ let getUserInfo = (user_id) => {
 
 exports.homePage = async (req, res, next) => {
     res.render('home', {
-        title: 'Welcome to Fitness | Home'
+        title: 'Welcome to Axces | Home'
     });
 }
 
 // Register Page
 exports.registerPage = (req, res, next) => {
             res.render('register', {
-                title: 'Welcome to Fitness | Register'
+                title: 'Welcome to Axces | Register'
             });
         };
 
@@ -36,7 +36,7 @@ exports.registerPage = (req, res, next) => {
         if (!errors.isEmpty()) {
             return res.render('register', {
                 error: errors.array()[0].msg,
-                title: 'Welcome to Fitness | Register'
+                title: 'Welcome to Axces | Register'
             });
         }
 
@@ -50,7 +50,7 @@ exports.registerPage = (req, res, next) => {
             if (row.length >= 1) {
                 return res.render('register', {
                     error: 'This email already in use.',
-                    title: 'Welcome to Fitness | Register'
+                    title: 'Welcome to Axces | Register'
                 });
             }
 
@@ -64,13 +64,13 @@ exports.registerPage = (req, res, next) => {
             if (rows.affectedRows !== 1) {
                 return res.render('register', {
                     error: 'Your registration has failed.',
-                    title: 'Welcome to Fitness | Register'
+                    title: 'Welcome to Axces | Register'
                 });
             }
 
             res.render("register", {
                 msg: 'You have successfully registered.',
-                title: 'Welcome to Fitness | Register'
+                title: 'Welcome to Axces | Register'
             });
 
         } catch (e) {
@@ -81,7 +81,7 @@ exports.registerPage = (req, res, next) => {
     // Login Page
     exports.loginPage = (req, res, next) => {
         res.render('login', {
-            title: 'Welcome to Fitness | Login'
+            title: 'Welcome to Axces | Login'
         });
     };
 
@@ -94,7 +94,7 @@ exports.registerPage = (req, res, next) => {
         if (!errors.isEmpty()) {
             return res.render('login', {
                 error: errors.array()[0].msg,
-                title: 'Welcome to Fitness | Login'
+                title: 'Welcome to Axces | Login'
             });
         }
 
@@ -105,7 +105,7 @@ exports.registerPage = (req, res, next) => {
             if (row.length != 1) {
                 return res.render('login', {
                     error: 'Invalid email address.',
-                    title: 'Welcome to Fitness | Login'
+                    title: 'Welcome to Axces | Login'
                 });
             }
 
@@ -134,7 +134,7 @@ exports.registerPage = (req, res, next) => {
 
             res.render('login', {
                 error: errorMessage,
-                title: 'Welcome to Fitness | Login'
+                title: 'Welcome to Axces | Login'
             });
 
 
@@ -147,7 +147,7 @@ exports.registerPage = (req, res, next) => {
 
     exports.profilePage = async (req, res, next) => {
         res.render('profile', {
-            title: 'Welcome to Fitness | Profile',
+            title: 'Welcome to Axces | Profile',
             page_title: 'Profile'
         });
     }
@@ -160,7 +160,7 @@ exports.registerPage = (req, res, next) => {
             let data = await getUserInfo(req.session.userID);
             return res.render('profile', {
                 error: errors.array()[0].msg,
-                title: 'Welcome to Fitness | Profile',
+                title: 'Welcome to Axces | Profile',
                 page_title: 'Profile'
             });
         }
@@ -175,7 +175,7 @@ exports.registerPage = (req, res, next) => {
                 if (row.affectedRows !== 1) {
                     return res.render('register', {
                         error: 'Unable to update profile.',
-                        title: 'Welcome to Fitness | Register'
+                        title: 'Welcome to Axces | Register'
                     });
                 }
             }
@@ -187,7 +187,7 @@ exports.registerPage = (req, res, next) => {
                 if (row.affectedRows !== 1) {
                     return res.render('register', {
                         error: 'Unable to update profile.',
-                        title: 'Welcome to Fitness | Register'
+                        title: 'Welcome to Axces | Register'
                     });
                 }
             }
@@ -195,7 +195,7 @@ exports.registerPage = (req, res, next) => {
             global.user = data[0];
             res.render("profile", {
                 msg: 'Your Profile has been updated successfully.',
-                title: 'Welcome to Fitness | Profile',
+                title: 'Welcome to Axces | Profile',
                 page_title: 'Profile'
             });
 
@@ -207,7 +207,7 @@ exports.registerPage = (req, res, next) => {
     // Forgot Password Page
     exports.forgotPasswordPage = (req, res, next) => {
         res.render('forgot-password', {
-            title: 'Welcome to Fitness | Forgot Password',
+            title: 'Welcome to Axces | Forgot Password',
             page_title: 'Forgot Password'
         });
     };
@@ -220,7 +220,7 @@ exports.registerPage = (req, res, next) => {
         if (!errors.isEmpty()) {
             return res.render('forgot-password', {
                 error: errors.array()[0].msg,
-                title: 'Welcome to Fitness | Forgot Password',
+                title: 'Welcome to Axces | Forgot Password',
                 page_title: 'Forgot Password'
             });
         }
@@ -234,7 +234,7 @@ exports.registerPage = (req, res, next) => {
             if (row.length == 0) {
                 return res.render('forgot-password', {
                     error: 'This email does not exist in the system.',
-                    title: 'Welcome to Fitness | Forgot Password',
+                    title: 'Welcome to Axces | Forgot Password',
                     page_title: 'Forgot Password'
                 });
             }
@@ -267,14 +267,14 @@ exports.registerPage = (req, res, next) => {
                         console.log(json);
                         return res.render('forgot-password', {
                             msg: 'Rest password has been sent to your registered email address, please check your inbox.',
-                            title: 'Welcome to Fitness | Forgot Password',
+                            title: 'Welcome to Axces | Forgot Password',
                             page_title: 'Forgot Password'
                         });
                     })
                     .catch(err => {
                         return res.render('forgot-password', {
                             error: err,
-                            title: 'Welcome to Fitness | Forgot Password',
+                            title: 'Welcome to Axces | Forgot Password',
                             page_title: 'Forgot Password'
                         });
                     });
@@ -291,7 +291,7 @@ exports.registerPage = (req, res, next) => {
 exports.userListingPage = async (req, res, next) => {
 
   res.render('users/user-listing', {
-      title: 'Welcome to Fitness | Users',
+      title: 'Welcome to Axces | Users',
       page_title: 'Manage Users'
   });
 }
