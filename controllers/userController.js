@@ -315,7 +315,7 @@ exports.getAppUsers = async (req, res, next) => {
     users.forEach((user,index) =>{
       var nestedData = {};
       nestedData['sn'] = helper_general.getSerialNumber(req.body.start, index);
-      nestedData['name'] = user.name;
+      nestedData['name'] = '<span><img src="'+user.image_thumb_path+'" class="img-circle" alt=""></span><span>&nbsp;'+user.name+'</span>';
       nestedData['email'] = user.email;
       nestedData['phone'] = user.phone;
       nestedData['options'] = '<div class="btn-group">';

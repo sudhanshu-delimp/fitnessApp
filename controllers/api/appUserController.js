@@ -322,12 +322,11 @@ exports.editUserProfile = async (req, res, next) => {
             }
           });
           await helper_image.resizeLargeFile(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
+          if(row.image!==''){
+            //await helper_image.removeImage(image_dir+`/${row.image}`);
+            //await helper_image.removeImage(thumb_image_dir+`/${row.image}`);
+          }
         });
-
-        if(row.image!==''){
-          await helper_image.removeImage(image_dir+`/${row.image}`);
-          await helper_image.removeImage(thumb_image_dir+`/${row.image}`);
-        }
       }
     },
     err=>{

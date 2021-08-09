@@ -91,6 +91,10 @@ exports.verifyToken = (req, res, next) => {
         sql+=" ORDER BY "+order+" "+dir+" LIMIT "+limit+" OFFSET "+offset;
         dbConnection.execute(sql,conditions.values).then((row) => {
             row = JSON.parse(JSON.stringify(row));
+            row[0].forEach(function(item,index){
+              row[0][index]['image_original_path'] =  (item.image!='')?process.env.BASE_URL+'/uploads/user/'+item.image:process.env.BASE_URL+'/assets/profile/dummy-profile-image.jpg';
+              row[0][index]['image_thumb_path'] = (item.image!='')?process.env.BASE_URL+'/uploads/user/thumb/'+item.image:process.env.BASE_URL+'/assets/profile/dummy-profile-image.jpg';
+            });
             resolve(row[0]);
         }, (err) => {
             reject(err);
