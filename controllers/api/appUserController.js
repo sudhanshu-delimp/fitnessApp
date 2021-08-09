@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const dbConnection = require("../../utils/dbConnection");
 const helper_email = require("../../helpers/email");
 const helper_general = require("../../helpers/general");
+const helper_image = require("../../helpers/image");
 
 exports.getOtherUserDetail = async (req, res, next) => {
   const errors = validationResult(req);
@@ -272,6 +273,87 @@ exports.deleteUser = async (req, res, next) => {
         //ResultSetHeader
         response['status'] = '1';
         response['data']['message'] = "Data has been deleted successfully.";
+      }, (err) => {
+          response['data']['error'] = error;
+      })
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    res.json(response);
+  }
+  catch (e) {
+    next(e);
+  }
+}
+
+exports.editUserProfile = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  var image_name = '';
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+  else{
+    var fields = {};
+    fields['email = ?'] = req.body.email;
+    fields['id != ?'] = req.user.id;
+    await helper_general.emailExist(fields).then(result=>{
+      if(result){
+        error.push('This email already in use.');
+      }
+    });
+
+    await helper_general.getOtherUserDetail(req.user.id).then(async (row)=>{
+      if(req.files !== null && req.files.image!==undefined){
+        let uploadedFile = req.files.image;
+        let fileExtension = uploadedFile.mimetype.split('/')[1];
+        image_name = Date.now()+'-'+row.name.replace(/\s+/g, "-")+'_'+row.id+'.' + fileExtension;
+        let image_dir = `public/uploads/user`;
+        let thumb_image_dir = `public/uploads/user/thumb`;
+
+        await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
+          await uploadedFile.mv(image_dir+`/${image_name}`, (err ) => {
+            if (err) {
+              error.push(err);
+            }
+          });
+          await helper_image.resizeLargeFile(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
+        });
+
+        if(row.image!==''){
+          await helper_image.removeImage(image_dir+`/${row.image}`);
+          await helper_image.removeImage(thumb_image_dir+`/${row.image}`);
+        }
+      }
+    },
+    err=>{
+      error.push(err);
+    });
+  }
+  try {
+    if(error.length == 0){
+      var where = {};
+      var update = {};
+      where['id = ?'] = req.user.id;
+      update['name = ?'] = req.body.name;
+      update['email = ?'] = req.body.email;
+      update['phone = ?'] = req.body.phone;
+      if(image_name!==''){
+        update['image = ?'] = image_name;
+      }
+      if(req.body.password !== ''){
+        update['password = ?'] = await bcrypt.hash(req.body.password, 12);;
+      }
+      var conditions = helper_general.buildUpdateConditionsString(update, where);
+      var sql = "UPDATE `users` SET "+conditions.updates+" WHERE "+conditions.where;
+      await dbConnection.execute(sql,conditions.values).then((row) => {
+        //ResultSetHeader
+        response['status'] = '1';
+        response['data']['message'] = "Updated successfully.";
       }, (err) => {
           response['data']['error'] = error;
       })

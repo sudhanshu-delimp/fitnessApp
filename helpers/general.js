@@ -35,9 +35,9 @@ exports.getOtherUserDetailByEmail = async (email) => {
 }
 
 exports.emailExist = async (items) => {
-  var conditions = this.buildConditionsString(items);
   return new Promise((resolve, reject)=>{
-  var sql = "SELECT id FROM `users` WHERE "+conditions.where;
+    var conditions = this.buildConditionsString(items);
+    var sql = "SELECT id FROM `users` WHERE "+conditions.where;
     dbConnection.execute(sql,conditions.values).then((row) => {
         resolve(row[0].length);
     }, (err) => {

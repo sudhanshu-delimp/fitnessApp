@@ -10,6 +10,7 @@ const {
     getOtherUserDetail,
     updateUser,
     deleteUser,
+    editUserProfile,
 } = require("./controllers/api/appUserController");
 
 const {
@@ -125,6 +126,48 @@ router.post(
         }),
     ],
     updateUser
+);
+
+router.post(
+    "/api/edit_profile",
+    [
+        helper_general.verifyToken,
+        body("name", "The name must be of minimum 3 characters length")
+            .notEmpty()
+            .escape()
+            .trim()
+            .isLength({ min: 3 }),
+        body("email", "Invalid email address.")
+            .notEmpty()
+            .escape()
+            .trim()
+            .isEmail(),
+        body("phone", "Invalid phone number")
+            .notEmpty()
+            .escape()
+            .trim()
+            .isNumeric(),
+        body("password").custom((value, { req })=>{
+            if(req.body.password !== ''){
+              if(req.body.password.length < 4){
+                  throw new Error('The Password must be of minimum 4 characters length.');
+              }
+            }
+            return true;
+        }),
+        body("image").custom((value, { req })=>{
+            if(req.files !== null && req.files.image!==undefined){
+              let uploadedFile = req.files.image;
+              let fileExtension = uploadedFile.mimetype.split('/')[1];
+              const allowedExtension = ["jpeg", "png", "jpg"];
+              if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
+                  throw new Error('Image File format is not allowed, use only jpeg and png.');
+              }
+            }
+            return true;
+        }),
+    ],
+    editUserProfile
 );
 
 router.post(

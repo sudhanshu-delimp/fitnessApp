@@ -14,8 +14,8 @@ exports.addExercisePage = async (req, res, next) => {
 
 exports.exerciseListingPage = async (req, res, next) => {
     res.render('exercise/listing', {
-        title: 'Welcome to Fitness | Manage Exercise',
-        page_title:'Manage Exercise'
+        title: 'Welcome to Fitness | Manage Exercises',
+        page_title:'Manage Exercises'
     });
 }
 
