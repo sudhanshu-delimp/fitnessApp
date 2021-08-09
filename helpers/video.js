@@ -41,7 +41,8 @@ exports.deleteFile =  async (destination_path) => {
         accessKeyId: process.env.ACCESS_KEY_ID,
         secretAccessKey: process.env.SECRET_ACCESS_KEY
       });
-      let aws_path = destination_path.replace('https://axces.s3.ap-southeast-2.amazonaws.com/','')
+      var aws_path = destination_path.replace('https://axces.s3.ap-southeast-2.amazonaws.com/','');
+      aws_path = destination_path.replace('https://axces.s3.amazonaws.com/','');
       console.log(aws_path);
       const params = {
         Bucket: process.env.BUCKET_NAME,
