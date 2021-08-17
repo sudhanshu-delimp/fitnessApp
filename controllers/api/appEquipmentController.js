@@ -222,6 +222,7 @@ exports.deleteEquipment = async (req, res, next) => {
         response['status'] = '1';
         response['data']['message'] = "Data has been deleted successfully.";
       }, (err) => {
+          error.push(err);
           response['data']['error'] = error;
       })
     }

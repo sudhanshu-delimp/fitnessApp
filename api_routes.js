@@ -39,6 +39,14 @@ const {
     deleteVideos,
 } = require("./controllers/api/appVideoController");
 
+const {
+    addWorkout,
+    addExerciseIntoWorkout,
+    removeExerciseFromWorkout,
+    reorderWorkoutExercise,
+    workoutExerciseRestTime,
+} = require("./controllers/api/appWorkoutController");
+
 router.post("/api/login",
     [
         body("email", "Invalid email address.")
@@ -532,4 +540,117 @@ router.post(
     deleteVideos
 );
 
+router.post("/api/add_workout",
+    [
+      helper_general.verifyToken,
+      body("title", "The title must be of minimum 3 characters length")
+          .notEmpty()
+          .escape()
+          .trim(),
+      body("schedule_time", "Invalid schedule time")
+          .notEmpty()
+          .escape()
+          .trim(),
+      body("schedule_date", "Invalid schedule date")
+          .notEmpty()
+          .escape()
+          .trim(),
+      body("description")
+          .notEmpty()
+          .withMessage("Description is required")
+          .escape()
+          .trim()
+          .isLength({ min: 10 })
+          .withMessage("Description's minimum length should be of 10 characters"),
+      body("image").custom((value, { req })=>{
+          let uploadedFile = req.files.image;
+          if(uploadedFile.name !== ''){
+            let fileExtension = uploadedFile.mimetype.split('/')[1];
+            const allowedExtension = ["jpeg", "png", "jpg"];
+            if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
+                throw new Error('File format is not allowed, use only jpeg and png.');
+            }
+          }
+          else{
+            throw new Error('Uplaod image is required.');
+          }
+          return true;
+      }),
+      ],
+    addWorkout
+);
+router.post("/api/add_exercise_into_workout",
+    [
+        helper_general.verifyToken,
+        body("workout_id")
+            .notEmpty()
+            .withMessage("Workout id is required"),
+        body("exercise_id")
+            .notEmpty()
+            .withMessage("Exercise id is required")
+            .custom(async (value, {req})=>{
+                if(req.body.exercise_id !== 0 && req.body.workout_id !== 0){
+                    var fields = {};
+                    fields['exercise_id = ?'] = req.body.exercise_id;
+                    fields['workout_id = ?'] = req.body.workout_id;
+                    await helper_general.workoutExerciseExist(fields).then(result=>{
+                        if(result){
+                            throw new Error('Already exist.');
+                        }
+                    });
+                }
+                return true;
+            }),  
+    ],
+      addExerciseIntoWorkout
+);
+
+router.post("/api/remove_exercise_from_workout",
+    [
+        helper_general.verifyToken,
+        body("id")
+            .notEmpty()
+            .withMessage("Id is required"),
+    ],
+    removeExerciseFromWorkout
+);
+
+router.post(
+    "/api/reorder_workout_exercise",
+    [
+      helper_general.verifyToken,
+      body("ids")
+      .custom((value, {req})=>{
+        if(!Array.isArray(req.body.ids)){
+            throw new Error('Provide array of ids.');
+        }
+        if(Array.isArray(req.body.ids) && req.body.ids.length == 0){
+            throw new Error('Do not send blank array of ids.');
+        }
+        return true;
+    }),
+    ],
+    reorderWorkoutExercise
+);
+
+router.post(
+    "/api/workout_exercise_rest_time",
+    [
+      helper_general.verifyToken,
+      body("id")
+      .notEmpty()
+      .withMessage("Id is required"),
+      body("action")
+      .notEmpty()
+      .withMessage("Action is required")
+      .custom((value, {req})=>{
+        const allowedAction = ["add", "remove"];
+        if(allowedAction.indexOf(req.body.action.toLowerCase()) < 0){
+            throw new Error('Only add and remove actions are allowed.');
+        }
+        return true;
+    }),
+    ],
+    workoutExerciseRestTime
+);
 module.exports = router;

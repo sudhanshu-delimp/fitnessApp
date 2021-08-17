@@ -41,7 +41,7 @@ exports.getEquipments = async (req, res, next) => {
       nestedData['sn'] = helper_general.getSerialNumber(req.body.start, index);
       nestedData['title'] = equipment.title;
       nestedData['image'] = '<img src="/uploads/equipment/thumb/'+equipment.image+'" class="img-circle" alt="">';
-      nestedData['qr_code'] = '<img src="/uploads/equipment/qr_code/'+equipment.qr_code+'" class="img-circle" alt="">';
+      //nestedData['qr_code'] = '<img src="/uploads/equipment/qr_code/'+equipment.qr_code+'" class="img-circle" alt="">';
       nestedData['options'] = '<div class="btn-group">';
       nestedData['options'] += '<button class="btn btn-secondary btn-sm main-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Action</span><span class="caret"></span></button>';
       nestedData['options'] += '<ul class="dropdown-menu">';
@@ -49,7 +49,7 @@ exports.getEquipments = async (req, res, next) => {
       nestedData['options'] += '<li><a onclick="deleteData(this)" data-id = "'+equipment.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-trash"></i>Delete</a></li>';
       nestedData['options'] += '<li><a onclick="assignExercise(this)" data-id = "'+equipment.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-grav"></i>Assign Exercise</a></li>';
       nestedData['options'] += '<li><a onclick="uploadVideo(this)" data-id = "'+equipment.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-play"></i>Videos</a></li>';
-      nestedData['options'] += '<li><a download="'+equipment.title+'" data-id = "'+equipment.id+'" class="dropdown-item main-text" href="/uploads/equipment/qr_code/'+equipment.qr_code+'"><i class="fa fa-fw fa-qrcode"></i>Download QR</a></li>';
+      //nestedData['options'] += '<li><a download="'+equipment.title+'" data-id = "'+equipment.id+'" class="dropdown-item main-text" href="/uploads/equipment/qr_code/'+equipment.qr_code+'"><i class="fa fa-fw fa-qrcode"></i>Download QR</a></li>';
       nestedData['options'] += '</ul>';
       nestedData['options'] += '</div>';
       data.push(nestedData);

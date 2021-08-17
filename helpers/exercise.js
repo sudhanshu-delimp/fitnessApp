@@ -16,6 +16,7 @@ exports.getExercises = async (req, res, next) => {
       if(req.body.equipment_id!==undefined){
         sql = "SELECT exercises.*,equipments_exercises.id as equipments_exercises_id  FROM `exercises`";
         sql+=" LEFT JOIN equipments_exercises ON (exercises.id = equipments_exercises.exercise_id && equipments_exercises.equipment_id = "+req.body.equipment_id+") WHERE "+conditions.where;
+        order = 'equipments_exercises_id';
       }
       else{
         sql = "SELECT exercises.* FROM `exercises` WHERE "+conditions.where;
@@ -71,5 +72,5 @@ exports.getExerciseDetail = async (id = '') => {
 }
 
 exports.deleteExerciseVideos = async (id = '') => {
-  
+
 }
