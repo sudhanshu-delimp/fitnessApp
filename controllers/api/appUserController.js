@@ -69,28 +69,28 @@ exports.user_register = async (req, res, next) => {
   try {
     if(error.length == 0){
       const hashPass = await bcrypt.hash(req.body.password, 12);
-      const [rows] = await dbConnection.execute(
-          "INSERT INTO `users`(`role`,`name`,`email`,`phone`,`password`) VALUES(?,?,?,?,?)",
-          ['app_user', req.body.name, req.body.email, req.body.phone, hashPass]
-      );
-      if(rows.affectedRows !== 1) {
-        response['data']['error'] = ['Your registration has failed.'];
-      }
-      else{
-        var params = {
-          'user_name':req.body.name,
-          'email':req.body.email,
-          'password':req.body.password
-        };
-        await helper_email.sendEmail(req.body.email, params, 11).then(result=>{
+      var insert = {};
+      insert['role'] = 'app_user';
+      insert['name'] = req.body.name;
+      insert['email'] = req.body.email;
+      insert['iso2'] = req.body.iso2;
+      insert['dialCode'] = req.body.dialCode;
+      insert['phone'] = req.body.phone;
+      insert['password'] = hashPass;
+      var conditions = helper_general.buildInsertConditionsString(insert);
+      var sql = "INSERT INTO `users`("+conditions.inserts+") VALUES("+conditions.fields+")";
+      await dbConnection.execute(sql,conditions.values).then(async (row) => {
+        var params = {'user_name':req.body.name,'email':req.body.email,'password':req.body.password};
+        await helper_email.sendEmail(req.body.email, params, 11).then((result)=>{
           response['status'] = '1';
           response['data']['email'] = result.data;
           response['data']['message'] = "You have successfully registered.";
-        },err=>{
+        },(err) =>{
           response['data']['error'] = err;
         });
-
-      }
+      },(err) => {
+          response['data']['error'] = err.message;
+      })
     }
     else{
       response['data']['error'] = error;
@@ -340,6 +340,8 @@ exports.editUserProfile = async (req, res, next) => {
       where['id = ?'] = req.user.id;
       update['name = ?'] = req.body.name;
       update['email = ?'] = req.body.email;
+      update['iso2 = ?'] = req.body.iso2;
+      update['dialCode = ?'] = req.body.dialCode;
       update['phone = ?'] = req.body.phone;
       if(image_name!==''){
         update['image = ?'] = image_name;
