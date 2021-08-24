@@ -309,12 +309,12 @@ exports.getAppUsers = async (req, res, next) => {
       nestedData['name'] = '<span><img src="'+user.image_thumb_path+'" class="img-circle" alt=""></span><span>&nbsp;'+user.name+'</span>';
       nestedData['email'] = user.email;
       nestedData['phone'] = user.phone;
-      nestedData['options'] = '<div class="btn-group">';
-      nestedData['options'] += '<button class="btn btn-secondary btn-sm main-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Action</span><span class="caret"></span></button>';
-      nestedData['options'] += '<ul class="dropdown-menu">';
+      nestedData['options'] = '<div class="btn-group"  role="group">';
+      nestedData['options'] += '<button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Action</span><span class="caret"></span></button>';
+      nestedData['options'] += '<div  class="dropdown-menu">';
       nestedData['options'] += '<li><a onclick="editUser(this)" data-id = "'+user.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-pencil"></i> Edit</a></li>';
       nestedData['options'] += '<li><a onclick="deleteUser(this)" data-id = "'+user.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-trash"></i> Delete</a></li>';
-      nestedData['options'] += '</ul>';
+      nestedData['options'] += '</div >';
       nestedData['options'] += '</div>';
       data.push(nestedData);
     });

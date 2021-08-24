@@ -43,7 +43,7 @@ exports.getEquipments = async (req, res, next) => {
       nestedData['image'] = '<img src="/uploads/equipment/thumb/'+equipment.image+'" class="img-circle" alt="">';
       //nestedData['qr_code'] = '<img src="/uploads/equipment/qr_code/'+equipment.qr_code+'" class="img-circle" alt="">';
       nestedData['options'] = '<div class="btn-group">';
-      nestedData['options'] += '<button class="btn btn-secondary btn-sm main-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Action</span><span class="caret"></span></button>';
+      nestedData['options'] += '<button class="btn btn-secondary btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Action</span><span class="caret"></span></button>';
       nestedData['options'] += '<ul class="dropdown-menu">';
       nestedData['options'] += '<li><a onclick="editData(this)" data-id = "'+equipment.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-pencil"></i>Edit</a></li>';
       nestedData['options'] += '<li><a onclick="deleteData(this)" data-id = "'+equipment.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-trash"></i>Delete</a></li>';
@@ -229,7 +229,7 @@ exports.getEquipmentVideos = async (req, res, next) => {
       nestedData['image'] = '<img src="/uploads/video/equipment/thumbnail_image/thumb/'+video.thumb_image+'" video-url="'+video.video+'" class="img-circle" alt="">';
       nestedData['image'] += '&nbsp;<a href="#" onclick="playVideoModal(this)" video-title="'+video.title+'" video-url="'+video.video+'" poster-url="/uploads/video/equipment/thumbnail_image/thumb/'+video.thumb_image+'"><i class="fa fa-play" aria-hidden="true"></i> <em>play</em></a>';
       nestedData['options'] = '<div class="btn-group">';
-      nestedData['options'] += '<button class="btn btn-secondary btn-sm main-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Action</span><span class="caret"></span></button>';
+      nestedData['options'] += '<button class="btn btn-secondary btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Action</span><span class="caret"></span></button>';
       nestedData['options'] += '<ul class="dropdown-menu">';
       nestedData['options'] += '<li><a onclick="editVideo(this)" data-id = "'+video.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-pencil"></i>Edit</a></li>';
       nestedData['options'] += '<li><a onclick="deleteVideo(this)" data-id = "'+video.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-trash"></i>Delete</a></li>';

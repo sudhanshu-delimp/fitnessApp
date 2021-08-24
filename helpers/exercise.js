@@ -47,14 +47,17 @@ exports.getExercisesCount = async (req, res, next) => {
   })
 }
 
-exports.getExerciseDetail = async (id = '') => {
+exports.getExerciseDetail = async (req) => {
   return new Promise((resolve, reject)=>{
     var where = {};
-    if(id!==''){
-      where['id = ?'] = id;
+    if(req.body.id!==''){
+      where['e.id = ?'] = req.body.id;
+      //where['b.user_id = ?'] = req.user.id;
     }
     var conditions = helper_general.buildConditionsString(where);
-    var sql = "SELECT * FROM `exercises` WHERE "+conditions.where;
+    var sql = "SELECT e.*,b.id as bookmark_id FROM `exercises` as e";
+    sql += " LEFT JOIN `bookmarks` as b ON(e.id = b.exercise_id AND b.user_id="+req.user.id+")";
+    sql += " WHERE "+conditions.where;
     dbConnection.execute(sql,conditions.values).then((row) => {
         row = JSON.parse(JSON.stringify(row));
         if(row[0].length > 0){

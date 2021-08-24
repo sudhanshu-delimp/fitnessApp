@@ -62,6 +62,18 @@ exports.workoutExerciseExist = async (items) => {
 });
 }
 
+exports.bookmarkExist = async (items) => {
+  return new Promise((resolve, reject)=>{
+    var conditions = this.buildConditionsString(items);
+    var sql = "SELECT id FROM `bookmarks` WHERE "+conditions.where;
+    dbConnection.execute(sql,conditions.values).then((row) => {
+        resolve(row[0].length);
+    }, (err) => {
+        reject(err);
+    })
+});
+}
+
 exports.generatePassword = async () => {
     var res = {};
     var randomstring = Math.random().toString(36).slice(-8);

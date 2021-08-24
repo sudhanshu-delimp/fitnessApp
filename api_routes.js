@@ -19,6 +19,8 @@ const {
     updateExercise,
     deleteExercise,
     getExerciseListing,
+    bookmarkExercise,
+    getBookmarkExercises,
 } = require("./controllers/api/appExerciseController");
 
 const {
@@ -45,6 +47,11 @@ const {
     removeExerciseFromWorkout,
     reorderWorkoutExercise,
     workoutExerciseRestTime,
+    getWorkoutExerciseList,
+    getWorkouts,
+    updateWorkoutExerciseDuration,
+    getWorkoutDetail,
+    finishWorkout,
 } = require("./controllers/api/appWorkoutController");
 
 router.post("/api/login",
@@ -652,5 +659,95 @@ router.post(
     }),
     ],
     workoutExerciseRestTime
+);
+
+router.post(
+    "/api/bookmark_exercise",
+    [
+      helper_general.verifyToken,
+      body("id")
+      .notEmpty()
+      .withMessage("Exercise id is required"),
+      body("action")
+      .notEmpty()
+      .withMessage("Action is required")
+      .custom(async (value, {req})=>{
+        const allowedAction = ["add", "remove"];
+        if(allowedAction.indexOf(req.body.action.toLowerCase()) < 0){
+            throw new Error('Only add and remove actions are allowed.');
+        }
+        if(req.body.id !== 0 && req.body.action === 'add'){
+            var fields = {};
+            fields['exercise_id = ?'] = req.body.id;
+            fields['user_id = ?'] = req.user.id;
+            await helper_general.bookmarkExist(fields).then(result=>{
+                if(result){
+                    throw new Error('Already exist.');
+                }
+            });
+        }
+        return true;
+    }),
+    ],
+    bookmarkExercise
+);
+
+router.post(
+    "/api/get_workout_exercise_list",
+    [
+      helper_general.verifyToken,
+      body("id")
+      .notEmpty()
+      .withMessage("Id is required"),
+    ],
+    getWorkoutExerciseList
+);
+
+router.post(
+    "/api/get_bookmark_exercises",
+    [
+      helper_general.verifyToken,
+    ],
+    getBookmarkExercises
+);
+
+router.post(
+    "/api/get_workouts",
+    [
+      helper_general.verifyToken,
+    ],
+    getWorkouts
+);
+
+router.post(
+    "/api/update_workout_exercise_duration",
+    [
+      helper_general.verifyToken,
+    ],
+    updateWorkoutExerciseDuration
+);
+
+router.post(
+    "/api/get_workout_detail",
+    [
+        helper_general.verifyToken,
+        body("id", "Invalid exercise id.")
+            .notEmpty()
+            .escape()
+            .trim(),
+    ],
+    getWorkoutDetail
+);
+
+router.post(
+    "/api/finish_workout",
+    [
+        helper_general.verifyToken,
+        body("id", "Invalid workout id.")
+            .notEmpty()
+            .escape()
+            .trim(),
+    ],
+    finishWorkout
 );
 module.exports = router;

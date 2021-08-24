@@ -34,6 +34,7 @@ public/uploads/equipment/*
 public/uploads/exercise/*
 public/uploads/video/*
 public/uploads/user/*
+public/uploads/workout/*
 # node-waf configuration
 .lock-wscript
 

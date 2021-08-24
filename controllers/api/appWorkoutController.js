@@ -1,7 +1,7 @@
 const { validationResult } = require("express-validator");
-const fs = require('fs');
 const dbConnection = require("../../utils/dbConnection");
 const helper_general = require("../../helpers/general");
+const helper_workout = require("../../helpers/workout");
 const helper_image = require("../../helpers/image");
 
 exports.addWorkout = async (req, res, next) => {
@@ -76,6 +76,8 @@ exports.addWorkout = async (req, res, next) => {
         var insert = {};
         insert['workout_id'] = req.body.workout_id;
         insert['exercise_id'] = req.body.exercise_id;
+        insert['left_duration'] = req.body.exercise_duration;
+        insert['status'] = 'Pending';
         var conditions = helper_general.buildInsertConditionsString(insert);
         var sql = "INSERT INTO `workouts_exercises`("+conditions.inserts+") VALUES("+conditions.fields+")";
         await dbConnection.execute(sql,conditions.values).then((row) => {
@@ -207,5 +209,196 @@ exports.addWorkout = async (req, res, next) => {
       res.json(response);
     } catch (e) {
       next(e);
+    }
+  }
+
+  exports.getWorkoutExerciseList = async (req, res, next) => {
+    const errors = validationResult(req);
+    var error = [];
+    var response = {};
+    response['status'] = '0';
+    response['data'] = {};
+    if (!errors.isEmpty()) {
+      error.push(errors.array()[0].msg);
+    }
+
+    try {
+      if(error.length == 0){
+        var where = {};
+          where['we.workout_id = ?'] = req.body.id;
+          var conditions = helper_general.buildConditionsString(where);
+          var sql = "SELECT we.id,we.left_duration,we.rest_time,e.title,e.image FROM `workouts_exercises` as we";
+          sql += " LEFT JOIN `exercises` as e ON (we.exercise_id = e.id)";
+          sql += " WHERE "+conditions.where;
+          sql+=" ORDER BY we.position ASC";
+          await dbConnection.execute(sql,conditions.values).then((row) => {
+            row = JSON.parse(JSON.stringify(row));
+            if(row[0].length > 0){
+              row[0].forEach(function(item,index){
+                row[0][index]['rest_time'] = (item.rest_time !== null) ? item.rest_time:0;
+                row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+item.image;
+                row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/thumb/'+item.image;
+              });
+              response['status'] = '1';
+              response['data']['exercises'] = row[0];
+            }
+            else{
+              error.push("data does not exist");
+              response['data']['error'] = error;
+            }
+          }, (err) => {
+              error.push(err);
+              response['data']['error'] = error;
+          })
+      }
+      else{
+        response['data']['error'] = error;
+      }
+      res.json(response);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  exports.getWorkouts = async (req, res, next) => {
+    const errors = validationResult(req);
+    var error = [];
+    var response = {};
+    response['status'] = '0';
+    response['data'] = {};
+    if (!errors.isEmpty()) {
+      error.push(errors.array()[0].msg);
+    }
+    try {
+      if(error.length == 0){
+        let start = parseInt(req.body.start);
+        let length = parseInt(req.body.length);
+        req.body.start = parseInt((++start*length)-length);
+        req.body['order[0][column]'] = '0';
+        req.body['order[0][dir]'] = 'desc';
+        await helper_workout.getWorkouts(req).then((row)=>{
+          if(row.length > 0){
+            response['status'] = '1';
+            response['data']['workouts'] = row;
+          }
+          else{
+            error.push("Data does not exist.");
+            response['data']['error'] = error;
+          }
+        }, (err)=>{
+          error.push(err.message);
+          response['data']['error'] = error;
+        });
+      }
+      else{
+        response['data']['error'] = error;
+      }
+      res.json(response);
+    }
+    catch (e) {
+      next(e);
+    }
+  }
+
+  exports.updateWorkoutExerciseDuration = async(req, res, next) =>{
+    const errors = validationResult(req);
+    var error = [];
+    var response = {};
+    response['status'] = '0';
+    response['data'] = {};
+    if (!errors.isEmpty()) {
+      error.push(errors.array()[0].msg);
+    }
+
+    try{
+      if(error.length == 0){
+        var where = {};
+        var update = {};
+        where['id = ?'] = req.body.id;
+        update['left_duration = ?'] = req.body.left_duration;
+        update['status = ?'] = req.body.status;
+        var conditions = helper_general.buildUpdateConditionsString(update, where);
+        var sql = "UPDATE `workouts_exercises` SET "+conditions.updates+" WHERE "+conditions.where;
+        await dbConnection.execute(sql,conditions.values).then((row)=>{
+          response['status'] = '1';
+          response['data']['message'] = "Success";
+        }, (err)=>{
+          error.push(err.message);
+        });
+      }
+      else{
+        response['data']['error'] = error;
+      }
+      res.json(response);
+    }
+    catch (e) {
+      next(e);
+    }
+  }
+
+  exports.getWorkoutDetail = async(req, res, next) => {
+    const errors = validationResult(req);
+    var error = [];
+    var response = {};
+
+    response['status'] = '0';
+    response['data'] = {};
+    if (!errors.isEmpty()) {
+      error.push(errors.array()[0].msg);
+    }
+
+    try {
+      if(error.length == 0){
+        var id = req.body.id;
+        await helper_workout.getWorkDetail(req).then(row=>{
+          response['status'] = '1';
+          response['data']['workout'] = row;
+          response['data']['message'] = "Data found";
+        },
+        err=>{
+          error.push(err);
+          response['data']['error'] = error;
+        });
+      }
+      else{
+        response['data']['error'] = error;
+      }
+      res.json(response);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  exports.finishWorkout = async (req, res, next) => {
+    const errors = validationResult(req);
+    var error = [];
+    var response = {};
+    response['status'] = '0';
+    response['data'] = {};
+    if (!errors.isEmpty()) {
+      error.push(errors.array()[0].msg);
+    }
+    try {
+      if(error.length == 0){
+        var where = {};
+        var update = {};
+        where['id = ?'] = req.body.id;
+        update['is_finished = ?'] = '1';
+        var conditions = helper_general.buildUpdateConditionsString(update, where);
+        var sql = "UPDATE `workouts` SET "+conditions.updates+" WHERE "+conditions.where;
+        await dbConnection.execute(sql,conditions.values).then((row)=>{
+          response['status'] = '1';
+          response['data']['message'] = "Success";
+        }, (err)=>{
+          error.push(err.message);
+        });
+      }
+      else{
+        response['data']['error'] = error;
+      }
+      res.json(response);
+    }
+    catch (e) {
+
     }
   }
