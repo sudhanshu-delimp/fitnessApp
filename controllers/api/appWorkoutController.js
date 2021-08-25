@@ -48,29 +48,31 @@ exports.addWorkout = async (req, res, next) => {
           //ResultSetHeader
           let exercises = req.body.exercises.split(",");
           let accessToken = req.body.token || req.query.token || req.headers["x-access-token"];
-          exercises.forEach(async(id, index)=>{
-            req.body.id = id;
-            await helper_exercise.getExerciseDetail(req).then((response)=>{
-              const options = {
-                  method: 'post',
-                  url:process.env.BASE_URL+'/api/add_exercise_into_workout',
-                  headers: {
-                      Accept: 'application/json',
-                      'Content-Type': 'application/json',
-                      'x-access-token': accessToken
-                  },
-                  data: JSON.stringify({
-                      workout_id: row[0]['insertId'],
-                      exercise_id: id,
-                      exercise_duration:response.duration
-                  })
-              };
-              return axios(options);
-            },(err)=>{
-              console.log("error");
-              console.log(err);
+          if(exercises.length > 0){
+            exercises.forEach(async(id, index)=>{
+              req.body.id = id;
+              await helper_exercise.getExerciseDetail(req).then((response)=>{
+                const options = {
+                    method: 'post',
+                    url:process.env.BASE_URL+'/api/add_exercise_into_workout',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'x-access-token': accessToken
+                    },
+                    data: JSON.stringify({
+                        workout_id: row[0]['insertId'],
+                        exercise_id: id,
+                        exercise_duration:response.duration
+                    })
+                };
+                return axios(options);
+              },(err)=>{
+                console.log("error");
+                console.log(err);
+              });
             });
-          });
+          }
           response['status'] = '1';
           response['data']['workout_id'] = row[0]['insertId'];
           response['data']['message'] = "Workout has been added successfully.";
