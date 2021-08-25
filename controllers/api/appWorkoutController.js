@@ -2,7 +2,9 @@ const { validationResult } = require("express-validator");
 const dbConnection = require("../../utils/dbConnection");
 const helper_general = require("../../helpers/general");
 const helper_workout = require("../../helpers/workout");
+const helper_exercise = require("../../helpers/exercise");
 const helper_image = require("../../helpers/image");
+const axios = require('axios');
 
 exports.addWorkout = async (req, res, next) => {
     const errors = validationResult(req);
@@ -42,8 +44,33 @@ exports.addWorkout = async (req, res, next) => {
         insert['image'] = image_name;
         var conditions = helper_general.buildInsertConditionsString(insert);
         var sql = "INSERT INTO `workouts`("+conditions.inserts+") VALUES("+conditions.fields+")";
-        await dbConnection.execute(sql,conditions.values).then((row) => {
+        await dbConnection.execute(sql,conditions.values).then(async (row) => {
           //ResultSetHeader
+          let exercises = req.body.exercises.split(",");
+          let accessToken = req.body.token || req.query.token || req.headers["x-access-token"];
+          exercises.forEach(async(id, index)=>{
+            req.body.id = id;
+            await helper_exercise.getExerciseDetail(req).then((response)=>{
+              const options = {
+                  method: 'post',
+                  url:process.env.BASE_URL+'/api/add_exercise_into_workout',
+                  headers: {
+                      Accept: 'application/json',
+                      'Content-Type': 'application/json',
+                      'x-access-token': accessToken
+                  },
+                  data: JSON.stringify({
+                      workout_id: row[0]['insertId'],
+                      exercise_id: id,
+                      exercise_duration:response.duration
+                  })
+              };
+              return axios(options);
+            },(err)=>{
+              console.log("error");
+              console.log(err);
+            });
+          });
           response['status'] = '1';
           response['data']['workout_id'] = row[0]['insertId'];
           response['data']['message'] = "Workout has been added successfully.";

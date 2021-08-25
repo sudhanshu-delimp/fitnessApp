@@ -19,7 +19,8 @@ let getUserInfo = (user_id) => {
 
 exports.homePage = async (req, res, next) => {
     res.render('home', {
-        title: 'Welcome to Axces | Home'
+        title: 'Welcome to Axces | Dashboard',
+        page_title: 'Dashboard'
     });
 }
 
