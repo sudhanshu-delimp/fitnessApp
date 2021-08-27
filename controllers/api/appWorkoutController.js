@@ -283,7 +283,12 @@ exports.addWorkout = async (req, res, next) => {
         req.body['order[0][column]'] = '0';
         req.body['order[0][dir]'] = 'desc';
         await helper_workout.getWorkouts(req).then((row)=>{
+          row = JSON.parse(JSON.stringify(row));
           if(row.length > 0){
+            row.forEach(function(item,index){
+              row[index]['image_original_path'] = process.env.BASE_URL+'/uploads/workout/'+item.image;
+              row[index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/workout/thumb/'+item.image;
+            });
             response['status'] = '1';
             response['data']['workouts'] = row;
           }
