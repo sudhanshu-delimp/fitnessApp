@@ -60,6 +60,7 @@ exports.uploadVideo = async (req, res, next) => {
         response['data']['video_url'] = video_file_url;
         response['data']['message'] = "Uploaded successfully.";
       }, (err) => {
+          error.push(err.message);
           response['data']['error'] = error;
       })
     }
@@ -109,6 +110,7 @@ exports.deleteVideo = async (req, res, next) => {
         response['status'] = '1';
         response['data']['message'] = "Data has been deleted successfully.";
       }, (err) => {
+          error.push(err.message);
           response['data']['error'] = error;
       })
     }
@@ -199,13 +201,13 @@ exports.updateVideo = async (req, res, next) => {
         response['status'] = '1';
         response['data']['message'] = "Data has been updated successfully.";
       }, (err) => {
-          response['data']['error'] = error;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{
       response['data']['error'] = error;
     }
-    console.log(response);
     res.json(response);
   }
   catch (e) {
@@ -245,7 +247,7 @@ exports.getEquipmentRelatedVideos = async (req, res, next) => {
               response['data']['error'] = error;
             }
         }, (err) => {
-            error.push(err);
+            error.push(err.message);
             response['data']['error'] = error;
         })
     }
@@ -292,7 +294,7 @@ exports.getExerciseRelatedVideos = async (req, res, next) => {
               response['data']['error'] = error;
             }
         }, (err) => {
-            error.push(err);
+            error.push(err.message);
             response['data']['error'] = error;
         })
     }
@@ -337,12 +339,13 @@ exports.deleteVideos = async (req, res, next) => {
                   var sql = "DELETE FROM `videos` WHERE "+conditions.where;
                   await dbConnection.execute(sql,conditions.values).then((row) => {
                     //ResultSetHeader
-                    console.log(video.video);
                   }, (err) => {
+                      error.push(err.message);
                       response['data']['error'] = error;
                   })
-                },err=>{
-                  error.push(err);
+                },(err)=>{
+                  error.push(err.message);
+                  response['data']['error'] = error;
                 });
               });
               response['status'] = '1';
@@ -352,6 +355,9 @@ exports.deleteVideos = async (req, res, next) => {
             error.push('No videos found.');
             response['data']['error'] = error;
           }
+        }, (err)=>{
+          error.push(err.message);
+          response['data']['error'] = error;
         });
     }
     else{

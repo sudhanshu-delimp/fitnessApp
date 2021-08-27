@@ -62,7 +62,7 @@ exports.getExercises = async (req, res, next) => {
 
 exports.deleteExercise = async (req, res, next) => {
   var id = req.body.id;
-  await helper_exercise.getExerciseDetail(id).then(async (row)=>{
+  await helper_exercise.getExerciseDetail(req).then(async (row)=>{
     res.render('exercise/exercise-delete', {
         exercise: row
     });
@@ -88,7 +88,7 @@ exports.deleteExerciseVideo = async (req, res, next) => {
 
 exports.exerciseUploadVideo = async (req, res, next) => {
   var id = req.body.id;
-  await helper_exercise.getExerciseDetail(id).then(async (row)=>{
+  await helper_exercise.getExerciseDetail(req).then(async (row)=>{
     res.render('exercise/upload-video', {
         exercise: row
     });

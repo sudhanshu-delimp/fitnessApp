@@ -52,11 +52,12 @@ exports.add_equipment = async (req, res, next) => {
             var sql = "UPDATE `equipments` SET "+conditions.updates+" WHERE "+conditions.where;
             await dbConnection.execute(sql,conditions.values);
         },(err)=>{
-          error.push(err);
+          error.push(err.message);
           response['data']['error'] = error;
         });
       }, (err) => {
-          response['data']['error'] = error;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{
@@ -171,7 +172,8 @@ exports.updateEquipment = async (req, res, next) => {
         }
         response['data']['message'] = "Data has been updated successfully.";
       }, (err) => {
-          response['data']['error'] = error;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{
@@ -222,8 +224,8 @@ exports.deleteEquipment = async (req, res, next) => {
         response['status'] = '1';
         response['data']['message'] = "Data has been deleted successfully.";
       }, (err) => {
-          error.push(err);
-          response['data']['error'] = error;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{
@@ -308,8 +310,8 @@ exports.getEquipmentRelatedExercises = async (req, res, next) => {
             response['data']['error'] = error;
           }
       }, (err) => {
-          error.push(err);
-          response['data']['error'] = error;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{

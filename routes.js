@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const { body } = require("express-validator");
+const helper_general = require("./helpers/general");
 const {
     homePage,
     register,
@@ -168,7 +169,7 @@ router.post(
     "/exercise/get-exercises",
     getExercises
 );
-router.post('/exercise/delete-exercise', ifNotLoggedin, deleteExercise);
+router.post('/exercise/delete-exercise', [ifNotLoggedin,helper_general.verifyToken,], deleteExercise);
 
 router.get("/equipment/add", ifNotLoggedin, addEquipmentPage);
 router.get("/equipment/manage", ifNotLoggedin, equipmentListingPage);
@@ -194,7 +195,7 @@ router.post(
 router.post('/equipment/delete-video', ifNotLoggedin, deleteEquipmentVideo);
 router.post('/equipment/update-video', ifNotLoggedin, updateEquipmentVideo);
 
-router.post('/exercise/upload-video', ifNotLoggedin, exerciseUploadVideo);
+router.post('/exercise/upload-video', [ifNotLoggedin,helper_general.verifyToken,], exerciseUploadVideo);
 router.post(
     "/exercise/get-exercise-videos",
     getExerciseVideos

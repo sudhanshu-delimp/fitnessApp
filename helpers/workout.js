@@ -1,6 +1,8 @@
 const dbConnection = require("../utils/dbConnection");
 const helper_general = require("./general");
+const helper_exercise = require("./exercise");
 const async = require("async");
+const axios = require('axios');
 
 exports.getWorkouts = async (req, res, next) => {
   const columns = ['id','title','image','id'];
@@ -22,6 +24,7 @@ exports.getWorkouts = async (req, res, next) => {
       if(req.body.is_finished!==undefined){
         where['w.is_finished = ?'] = req.body.is_finished;
       }
+      where['w.is_archived = ?'] = req.body.is_archived;
       var conditions = helper_general.buildConditionsString(where);
       var sql;
       sql = "SELECT w.* FROM `workouts` AS w";
@@ -152,5 +155,48 @@ exports.getWorkDetail = async (req) => {
     }, (err) => {
         reject(err.message);
     })
+  });
+}
+
+exports.addBulkExerciseIntoWorkout = async (req, workout_id) => {
+  let tasks = [];
+  let exercises = req.body.exercises.split(",");
+  let accessToken = req.body.token || req.query.token || req.headers["x-access-token"];
+  exercises.forEach(async(id, index)=>{
+    tasks.push(function(cb){
+      req.body.id = id;
+      helper_exercise.getExerciseDetail(req).then(async(response)=>{
+        const options = {
+            method: 'post',
+            url:process.env.BASE_URL+'/api/add_exercise_into_workout',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'x-access-token': accessToken
+            },
+            data: JSON.stringify({
+                workout_id: workout_id,
+                exercise_id: id,
+                exercise_duration:response.duration
+            })
+        };
+        axios(options).then(response => {
+          cb(null, response.data )
+        })
+        .catch((err)=>{
+          cb(null,err)
+        });
+      },(err)=>{
+        error.push(err.message);
+        response['data']['error'] = error;
+      });
+    });
+  });
+  async.series(tasks,(err,result)=>{
+    if(err){
+      console.log(err);
+    }else{
+      console.log(result);
+    }
   });
 }

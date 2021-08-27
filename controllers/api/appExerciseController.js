@@ -46,7 +46,8 @@ exports.add_exercise = async (req, res, next) => {
         response['status'] = '1';
         response['data']['message'] = "Data has been added successfully.";
       }, (err) => {
-          response['data']['error'] = error;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{
@@ -164,7 +165,8 @@ exports.updateExercise = async (req, res, next) => {
         }
         response['data']['message'] = "Data has been updated successfully.";
       }, (err) => {
-          response['data']['error'] = error;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{
@@ -209,8 +211,8 @@ exports.deleteExercise = async (req, res, next) => {
         response['status'] = '1';
         response['data']['message'] = "Data has been deleted successfully.";
       }, (err) => {
-          error.push(err);
-          response['data']['error'] = error;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{
@@ -293,7 +295,8 @@ exports.bookmarkExercise = async (req, res, next) => {
             response['data']['bookmark_id'] = row[0]['insertId'];
             response['data']['message'] = "Bookmarked";
           }, (err) => {
-              response['data']['error'] = error;
+            error.push(err.message);
+            response['data']['error'] = error;
           })
         } break;
         case 'remove':{
@@ -304,8 +307,8 @@ exports.bookmarkExercise = async (req, res, next) => {
             response['status'] = '1';
             response['data']['message'] = "Unbookmarked";
           }, (err) => {
-              error.push(err);
-              response['data']['error'] = error;
+            error.push(err.message);
+            response['data']['error'] = error;
           })
         } break;
       }
@@ -360,8 +363,8 @@ exports.getBookmarkExercises = async (req, res, next) => {
             response['data']['error'] = error;
           }
         }, (err) => {
-            error.push(err);
-            response['data']['error'] = error;
+          error.push(err.message);
+          response['data']['error'] = error;
         })
     }
     else{

@@ -4,7 +4,6 @@ const helper_general = require("../../helpers/general");
 const helper_workout = require("../../helpers/workout");
 const helper_exercise = require("../../helpers/exercise");
 const helper_image = require("../../helpers/image");
-const axios = require('axios');
 
 exports.addWorkout = async (req, res, next) => {
     const errors = validationResult(req);
@@ -46,38 +45,15 @@ exports.addWorkout = async (req, res, next) => {
         var sql = "INSERT INTO `workouts`("+conditions.inserts+") VALUES("+conditions.fields+")";
         await dbConnection.execute(sql,conditions.values).then(async (row) => {
           //ResultSetHeader
-          let exercises = req.body.exercises.split(",");
-          let accessToken = req.body.token || req.query.token || req.headers["x-access-token"];
-          if(exercises.length > 0){
-            exercises.forEach(async(id, index)=>{
-              req.body.id = id;
-              await helper_exercise.getExerciseDetail(req).then((response)=>{
-                const options = {
-                    method: 'post',
-                    url:process.env.BASE_URL+'/api/add_exercise_into_workout',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                        'x-access-token': accessToken
-                    },
-                    data: JSON.stringify({
-                        workout_id: row[0]['insertId'],
-                        exercise_id: id,
-                        exercise_duration:response.duration
-                    })
-                };
-                return axios(options);
-              },(err)=>{
-                console.log("error");
-                console.log(err);
-              });
-            });
+          if(req.body.exercises !== ''){
+             helper_workout.addBulkExerciseIntoWorkout(req, row[0]['insertId']);
           }
           response['status'] = '1';
           response['data']['workout_id'] = row[0]['insertId'];
           response['data']['message'] = "Workout has been added successfully.";
         }, (err) => {
-            response['data']['error'] = error;
+          error.push(err.message);
+          response['data']['error'] = error;
         })
       }
       else{
@@ -113,7 +89,8 @@ exports.addWorkout = async (req, res, next) => {
           response['status'] = '1';
           response['data']['message'] = "Added successfully.";
         }, (err) => {
-            response['data']['error'] = error;
+          error.push(err.message);
+          response['data']['error'] = error;
         });
       }
       else{
@@ -146,8 +123,8 @@ exports.addWorkout = async (req, res, next) => {
           response['status'] = '1';
           response['data']['message'] = "Deleted successfully.";
         }, (err) => {
-            error.push(err);
-            response['data']['error'] = error;
+          error.push(err.message);
+          response['data']['error'] = error;
         })
       }
       else{
@@ -228,7 +205,7 @@ exports.addWorkout = async (req, res, next) => {
           response['status'] = '1';
           response['data']['message'] = (action === 'add')?"added":"removed";
         }, (err)=>{
-          error.push(err);
+          error.push(err.message);
           response['data']['error'] = error;
         });
       }
@@ -276,8 +253,8 @@ exports.addWorkout = async (req, res, next) => {
               response['data']['error'] = error;
             }
           }, (err) => {
-              error.push(err);
-              response['data']['error'] = error;
+            error.push(err.message);
+            response['data']['error'] = error;
           })
       }
       else{
@@ -353,6 +330,7 @@ exports.addWorkout = async (req, res, next) => {
           response['data']['message'] = "Success";
         }, (err)=>{
           error.push(err.message);
+          response['data']['error'] = error;
         });
       }
       else{
@@ -420,6 +398,7 @@ exports.addWorkout = async (req, res, next) => {
           response['data']['message'] = "Success";
         }, (err)=>{
           error.push(err.message);
+          response['data']['error'] = error;
         });
       }
       else{
@@ -429,5 +408,46 @@ exports.addWorkout = async (req, res, next) => {
     }
     catch (e) {
 
+    }
+  }
+
+  exports.archiveWorkout = async (req, res, next) => {
+    const errors = validationResult(req);
+    var error = [];
+    var response = {};
+    response['status'] = '0';
+    response['data'] = {};
+    if (!errors.isEmpty()) {
+      error.push(errors.array()[0].msg);
+    }
+    try {
+      if(error.length == 0){
+        let action = req.body.action;
+        var where = {}, update = {};
+        where['id = ?'] = req.body.id;
+        switch (action) {
+          case 'add':{
+            update['is_archived = ?'] = '1';
+          } break;
+          case 'remove':{
+            update['is_archived = ?'] = '0';
+          } break;
+        }
+        var conditions = helper_general.buildUpdateConditionsString(update, where);
+        var sql = "UPDATE `workouts` SET "+conditions.updates+" WHERE "+conditions.where;
+        await dbConnection.execute(sql,conditions.values).then((row) => {
+          response['status'] = '1';
+          response['data']['message'] = "Success.";
+        }, (err) => {
+          error.push(err.message);
+          response['data']['error'] = error;
+        })
+      }
+      else{
+        response['data']['error'] = error;
+      }
+      res.json(response);
+    } catch (e) {
+      next(e);
     }
   }

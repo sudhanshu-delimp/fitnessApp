@@ -89,7 +89,8 @@ exports.user_register = async (req, res, next) => {
           response['data']['error'] = err;
         });
       },(err) => {
-          response['data']['error'] = err.message;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{
@@ -241,7 +242,8 @@ exports.updateUser = async (req, res, next) => {
         response['status'] = '1';
         response['data']['message'] = "Data has been updated successfully.";
       }, (err) => {
-          response['data']['error'] = error;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{
@@ -274,7 +276,8 @@ exports.deleteUser = async (req, res, next) => {
         response['status'] = '1';
         response['data']['message'] = "Data has been deleted successfully.";
       }, (err) => {
-          response['data']['error'] = error;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{
@@ -356,7 +359,8 @@ exports.editUserProfile = async (req, res, next) => {
         response['status'] = '1';
         response['data']['message'] = "Updated successfully.";
       }, (err) => {
-          response['data']['error'] = error;
+        error.push(err.message);
+        response['data']['error'] = error;
       })
     }
     else{

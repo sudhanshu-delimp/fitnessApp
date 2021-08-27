@@ -52,6 +52,7 @@ const {
     updateWorkoutExerciseDuration,
     getWorkoutDetail,
     finishWorkout,
+    archiveWorkout,
 } = require("./controllers/api/appWorkoutController");
 
 router.post("/api/login",
@@ -749,5 +750,27 @@ router.post(
             .trim(),
     ],
     finishWorkout
+);
+
+router.post(
+    "/api/archive_workout",
+    [
+        helper_general.verifyToken,
+        body("id", "Invalid workout id.")
+            .notEmpty()
+            .escape()
+            .trim(),
+        body("action")
+        .notEmpty()
+        .withMessage("Action is required")
+        .custom((value, {req})=>{
+            const allowedAction = ["add", "remove"];
+            if(allowedAction.indexOf(req.body.action.toLowerCase()) < 0){
+                throw new Error('Only add and remove actions are allowed.');
+            }
+            return true;
+        }),    
+    ],
+    archiveWorkout
 );
 module.exports = router;

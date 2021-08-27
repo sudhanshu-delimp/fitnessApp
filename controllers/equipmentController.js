@@ -164,7 +164,8 @@ exports.processExercisesAssignment = async (req, res, next) => {
             response['status'] = '1';
             response['data']['message'] = "Assigned successfully.";
           }, (err) => {
-              response['data']['error'] = error;
+            error.push(err.message);
+            response['data']['error'] = error;
           });
         } break;
         case 'delete':{
@@ -178,7 +179,8 @@ exports.processExercisesAssignment = async (req, res, next) => {
             response['status'] = '1';
             response['data']['message'] = "Unassigned successfully.";
           }, (err) => {
-              response['data']['error'] = error;
+            error.push(err.message);
+            response['data']['error'] = error;
           })
         } break;
       }
