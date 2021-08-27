@@ -551,8 +551,9 @@ router.post(
 router.post("/api/add_workout",
     [
       helper_general.verifyToken,
-      body("title", "The title must be of minimum 3 characters length")
+      body("title")
           .notEmpty()
+          .withMessage("Title is required")
           .escape()
           .trim(),
       body("schedule_time", "Invalid schedule time")
