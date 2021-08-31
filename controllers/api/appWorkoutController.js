@@ -16,21 +16,21 @@ exports.addWorkout = async (req, res, next) => {
       error.push(errors.array()[0].msg);
     }
     else{
-      if(req.files.image !== undefined){
-        let uploadedFile = req.files.image;
-        let fileExtension = uploadedFile.mimetype.split('/')[1];
-        image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
-        let image_dir = 'public/uploads/workout';
-        let thumb_image_dir = 'public/uploads/workout/thumb';
-        await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
-          await uploadedFile.mv(image_dir+`/${image_name}`, (err ) => {
-            if (err) {
-              error.push(err);
-            }
-            helper_image.resize(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
-          });
-        });
-      }
+      // if(req.files.image !== undefined){
+      //   let uploadedFile = req.files.image;
+      //   let fileExtension = uploadedFile.mimetype.split('/')[1];
+      //   image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
+      //   let image_dir = 'public/uploads/workout';
+      //   let thumb_image_dir = 'public/uploads/workout/thumb';
+      //   await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
+      //     await uploadedFile.mv(image_dir+`/${image_name}`, (err ) => {
+      //       if (err) {
+      //         error.push(err);
+      //       }
+      //       helper_image.resize(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
+      //     });
+      //   });
+      // }
     }
     try {
       if(error.length == 0){
