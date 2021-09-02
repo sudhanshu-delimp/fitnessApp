@@ -4,6 +4,7 @@ const helper_general = require("../../helpers/general");
 const helper_workout = require("../../helpers/workout");
 const helper_exercise = require("../../helpers/exercise");
 const helper_image = require("../../helpers/image");
+const fs = require('fs');
 
 exports.addWorkout = async (req, res, next) => {
     const errors = validationResult(req);
@@ -16,21 +17,43 @@ exports.addWorkout = async (req, res, next) => {
       error.push(errors.array()[0].msg);
     }
     else{
-      // if(req.files.image !== undefined){
-      //   let uploadedFile = req.files.image;
-      //   let fileExtension = uploadedFile.mimetype.split('/')[1];
-      //   image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
-      //   let image_dir = 'public/uploads/workout';
-      //   let thumb_image_dir = 'public/uploads/workout/thumb';
-      //   await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
-      //     await uploadedFile.mv(image_dir+`/${image_name}`, (err ) => {
-      //       if (err) {
-      //         error.push(err);
-      //       }
-      //       helper_image.resize(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
-      //     });
-      //   });
-      // }
+      if(req.body.image_type_format === 'base64'){
+        if(req.body.image){
+          const image64 = req.body.image.replace(/^data:([A-Za-z-+/]+);base64,/, "");
+          let mimeType = req.body.image.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+          if(mimeType == "image/jpeg" || mimeType == "image/png" || mimeType == "image/jpg") {
+            let extention = mimeType.split("/");
+            let image_dir = 'public/uploads/workout';
+            let thumb_image_dir = 'public/uploads/workout/thumb';
+            image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + extention[1];
+            
+            await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
+              await fs.writeFileSync(image_dir+'/'+image_name, image64, { encoding: "base64" });
+              //helper_image.resize(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
+            });
+          }
+          else{
+            error.push("Not support this file type");
+          }
+        }
+      }
+      else{
+        if(req.files.image !== undefined){
+          let uploadedFile = req.files.image;
+          let fileExtension = uploadedFile.mimetype.split('/')[1];
+          image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
+          let image_dir = 'public/uploads/workout';
+          let thumb_image_dir = 'public/uploads/workout/thumb';
+          await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
+            await uploadedFile.mv(image_dir+`/${image_name}`, (err ) => {
+              if (err) {
+                error.push(err);
+              }
+              helper_image.resize(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
+            });
+          });
+        }
+      }
     }
     try {
       if(error.length == 0){

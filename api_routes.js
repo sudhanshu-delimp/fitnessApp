@@ -571,20 +571,29 @@ router.post("/api/add_workout",
           .trim()
           .isLength({ min: 10 })
           .withMessage("Description's minimum length should be of 10 characters"),
-    //   body("image").custom((value, { req })=>{
-    //       let uploadedFile = req.files.image;
-    //       if(uploadedFile.name !== ''){
-    //         let fileExtension = uploadedFile.mimetype.split('/')[1];
-    //         const allowedExtension = ["jpeg", "png", "jpg"];
-    //         if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
-    //             throw new Error('File format is not allowed, use only jpeg and png.');
-    //         }
-    //       }
-    //       else{
-    //         throw new Error('Uplaod image is required.');
-    //       }
-    //       return true;
-    //   }),
+        body("image").custom((value, { req })=>{
+        if(req.body.image_type_format !== 'base64'){
+            let uploadedFile = req.files.image;
+            if(uploadedFile.name !== ''){
+                let fileExtension = uploadedFile.mimetype.split('/')[1];
+                const allowedExtension = ["jpeg", "png", "jpg"];
+                if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
+                    throw new Error('File format is not allowed, use only jpeg and png.');
+                }
+            }
+            else{
+                throw new Error('Uplaod image is required.');
+            }
+        }
+        else{
+            let mimeType = req.body.image.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+            const allowedMimeType = ["image/jpeg", "image/png", "image/jpg"];
+            if(allowedMimeType.indexOf(mimeType.toLowerCase()) < 0){
+                throw new Error('File format is not allowed, use only jpeg and png.');
+            }
+        }
+        return true;
+        }),
       ],
     addWorkout
 );
