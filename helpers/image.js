@@ -101,3 +101,23 @@ exports.createDirectories = async (paths) => {
     }
   });
 }
+
+exports.uploadBase64Image = async (image_string, destination_path, image_name) =>{
+  fs.writeFileSync(destination_path+'/'+image_name, image_string, { encoding: "base64" });
+}
+
+exports.getBase64ImageInfo = (base64String) => {
+    try{
+      let imageString = base64String.replace(/^data:([A-Za-z-+/]+);base64,/, "");
+      let mimeType = base64String.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+      let extention = mimeType.split("/");
+      let image_info = [];
+      image_info['mime_type'] = mimeType;
+      image_info['extention'] = extention[1];
+      image_info['image_string'] = imageString;
+      return image_info;
+    }
+    catch(err){
+      return err;
+    }
+}

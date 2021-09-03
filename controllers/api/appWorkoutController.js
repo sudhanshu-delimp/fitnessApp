@@ -4,7 +4,6 @@ const helper_general = require("../../helpers/general");
 const helper_workout = require("../../helpers/workout");
 const helper_exercise = require("../../helpers/exercise");
 const helper_image = require("../../helpers/image");
-const fs = require('fs');
 
 exports.addWorkout = async (req, res, next) => {
     const errors = validationResult(req);
@@ -17,33 +16,24 @@ exports.addWorkout = async (req, res, next) => {
       error.push(errors.array()[0].msg);
     }
     else{
+      let image_dir = 'public/uploads/workout';
+      let thumb_image_dir = 'public/uploads/workout/thumb';
       if(req.body.image_type_format === 'base64'){
-        if(req.body.image){
-          const image64 = req.body.image.replace(/^data:([A-Za-z-+/]+);base64,/, "");
-          let mimeType = req.body.image.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
-          if(mimeType == "image/jpeg" || mimeType == "image/png" || mimeType == "image/jpg") {
-            let extention = mimeType.split("/");
-            let image_dir = 'public/uploads/workout';
-            let thumb_image_dir = 'public/uploads/workout/thumb';
-            image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + extention[1];
-            
-            await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
-              await fs.writeFileSync(image_dir+'/'+image_name, image64, { encoding: "base64" });
-              //helper_image.resize(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
-            });
-          }
-          else{
-            error.push("Not support this file type");
-          }
-        }
+        if(req.body.image && req.body.image!==undefined){
+          let image_info = helper_image.getBase64ImageInfo(req.body.image);
+          let fileExtension = image_info.extention;
+          image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
+          await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
+            helper_image.uploadBase64Image(image_info.image_string, image_dir, image_name);
+            helper_image.resize(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
+          });
+      }
       }
       else{
         if(req.files.image !== undefined){
           let uploadedFile = req.files.image;
           let fileExtension = uploadedFile.mimetype.split('/')[1];
           image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
-          let image_dir = 'public/uploads/workout';
-          let thumb_image_dir = 'public/uploads/workout/thumb';
           await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
             await uploadedFile.mv(image_dir+`/${image_name}`, (err ) => {
               if (err) {

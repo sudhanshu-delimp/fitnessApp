@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { body } = require("express-validator");
 const helper_general = require("./helpers/general");
-
+const helper_image = require("./helpers/image");
 const {
     user_login,
     user_register,
@@ -187,10 +187,15 @@ router.post(
                 }
             }
             else{
-                let mimeType = req.body.image.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
-                const allowedMimeType = ["image/jpeg", "image/png", "image/jpg"];
-                if(allowedMimeType.indexOf(mimeType.toLowerCase()) < 0){
-                    throw new Error('File format is not allowed, use only jpeg and png.');
+                if(req.body.image !== ''){
+                    let imageInfo = helper_image.getBase64ImageInfo(req.body.image);
+                    const allowedExtension = ["jpeg", "png", "jpg"];
+                    if(allowedExtension.indexOf(imageInfo.extention.toLowerCase()) < 0){
+                        throw new Error('File format is not allowed, use only jpeg and png.');
+                    }
+                }
+                else{
+                    throw new Error('Uplaod image is required.');
                 }
             }
             return true;
@@ -598,10 +603,15 @@ router.post("/api/add_workout",
             }
         }
         else{
-            let mimeType = req.body.image.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
-            const allowedMimeType = ["image/jpeg", "image/png", "image/jpg"];
-            if(allowedMimeType.indexOf(mimeType.toLowerCase()) < 0){
-                throw new Error('File format is not allowed, use only jpeg and png.');
+            if(req.body.image !== ''){
+                let imageInfo = helper_image.getBase64ImageInfo(req.body.image);
+                const allowedExtension = ["jpeg", "png", "jpg"];
+                if(allowedExtension.indexOf(imageInfo.extention.toLowerCase()) < 0){
+                    throw new Error('File format is not allowed, use only jpeg and png.');
+                }
+            }
+            else{
+                throw new Error('Uplaod image is required.');
             }
         }
         return true;
