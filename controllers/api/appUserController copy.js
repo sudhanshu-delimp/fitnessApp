@@ -5,7 +5,6 @@ const dbConnection = require("../../utils/dbConnection");
 const helper_email = require("../../helpers/email");
 const helper_general = require("../../helpers/general");
 const helper_image = require("../../helpers/image");
-const fs = require('fs');
 
 exports.getOtherUserDetail = async (req, res, next) => {
   const errors = validationResult(req);
@@ -312,51 +311,25 @@ exports.editUserProfile = async (req, res, next) => {
     });
 
     await helper_general.getOtherUserDetail(req.user.id).then(async (row)=>{
-      if(req.body.image_type_format === 'base64'){
-        if(req.body.image){
-          const image64 = req.body.image.replace(/^data:([A-Za-z-+/]+);base64,/, "");
-          let mimeType = req.body.image.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
-          if(mimeType == "image/jpeg" || mimeType == "image/png" || mimeType == "image/jpg") {
-            let extention = mimeType.split("/");
-            let image_dir = `public/uploads/user`;
-            let thumb_image_dir = `public/uploads/user/thumb`;
-            image_name = Date.now()+'-'+row.name.replace(/\s+/g, "-")+'_'+row.id+'.' + extention[1];
-            
-            await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
-              fs.writeFileSync(image_dir+'/'+image_name, image64, { encoding: "base64" });
-              //helper_image.resize(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
-              // if(row.image!==''){
-              //   helper_image.removeImage(image_dir+`/${row.image}`);
-              //   helper_image.removeImage(thumb_image_dir+`/${row.image}`);
-              // }
-            });
-          }
-          else{
-            error.push("Not support this file type");
-          }
-        }
-      }
-      else{
-        if(req.files !== null && req.files.image!==undefined){
-          let uploadedFile = req.files.image;
-          let fileExtension = uploadedFile.mimetype.split('/')[1];
-          image_name = Date.now()+'-'+row.name.replace(/\s+/g, "-")+'_'+row.id+'.' + fileExtension;
-          let image_dir = `public/uploads/user`;
-          let thumb_image_dir = `public/uploads/user/thumb`;
-  
-          await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
-            await uploadedFile.mv(image_dir+`/${image_name}`, (err ) => {
-              if (err) {
-                error.push(err);
-              }
-            });
-            await helper_image.resizeLargeFile(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
-            if(row.image!==''){
-              helper_image.removeImage(image_dir+`/${row.image}`);
-              helper_image.removeImage(thumb_image_dir+`/${row.image}`);
+      if(req.files !== null && req.files.image!==undefined){
+        let uploadedFile = req.files.image;
+        let fileExtension = uploadedFile.mimetype.split('/')[1];
+        image_name = Date.now()+'-'+row.name.replace(/\s+/g, "-")+'_'+row.id+'.' + fileExtension;
+        let image_dir = `public/uploads/user`;
+        let thumb_image_dir = `public/uploads/user/thumb`;
+
+        await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
+          await uploadedFile.mv(image_dir+`/${image_name}`, (err ) => {
+            if (err) {
+              error.push(err);
             }
           });
-        }
+          await helper_image.resizeLargeFile(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
+          if(row.image!==''){
+            helper_image.removeImage(image_dir+`/${row.image}`);
+            helper_image.removeImage(thumb_image_dir+`/${row.image}`);
+          }
+        });
       }
     },
     err=>{
