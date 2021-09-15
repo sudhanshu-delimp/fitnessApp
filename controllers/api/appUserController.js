@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const dbConnection = require("../../utils/dbConnection");
 const helper_email = require("../../helpers/email");

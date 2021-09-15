@@ -344,7 +344,7 @@ exports.getBookmarkExercises = async (req, res, next) => {
           where['e.title LIKE ?'] = "%" + req.body.title + "%";
         }
         var conditions = helper_general.buildConditionsString(where);
-        var sql = "SELECT e.* FROM `bookmarks` as b";
+        var sql = "SELECT b.id as bookmark_id,e.* FROM `bookmarks` as b";
         sql += " LEFT JOIN `exercises` as e ON (b.exercise_id = e.id)";
         sql += " WHERE "+conditions.where;
         sql +=" ORDER BY "+order+" "+dir+" LIMIT "+limit+" OFFSET "+offset;
