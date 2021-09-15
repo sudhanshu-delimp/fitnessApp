@@ -246,7 +246,7 @@ exports.addWorkout = async (req, res, next) => {
         var where = {};
           where['we.workout_id = ?'] = req.body.id;
           var conditions = helper_general.buildConditionsString(where);
-          var sql = "SELECT we.id,we.left_duration,we.rest_time,we.status,e.title,e.image FROM `workouts_exercises` as we";
+          var sql = "SELECT we.id,we.left_duration,we.rest_time,we.status,e.id as exercise_id,e.title,e.image FROM `workouts_exercises` as we";
           sql += " LEFT JOIN `exercises` as e ON (we.exercise_id = e.id)";
           sql += " WHERE "+conditions.where;
           sql+=" ORDER BY we.position ASC";
