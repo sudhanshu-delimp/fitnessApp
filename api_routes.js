@@ -172,34 +172,34 @@ router.post(
             }
             return true;
         }),
-        body("image").custom((value, { req })=>{
-            if(req.body.image_type_format !== 'base64'){
-                let uploadedFile = req.files.image;
-                if(uploadedFile.name !== ''){
-                    let fileExtension = uploadedFile.mimetype.split('/')[1];
-                    const allowedExtension = ["jpeg", "png", "jpg"];
-                    if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
-                        throw new Error('File format is not allowed, use only jpeg and png.');
-                    }
-                }
-                else{
-                    throw new Error('Uplaod image is required.');
-                }
-            }
-            else{
-                if(req.body.image !== ''){
-                    let imageInfo = helper_image.getBase64ImageInfo(req.body.image);
-                    const allowedExtension = ["jpeg", "png", "jpg"];
-                    if(allowedExtension.indexOf(imageInfo.extention.toLowerCase()) < 0){
-                        throw new Error('File format is not allowed, use only jpeg and png.');
-                    }
-                }
-                else{
-                    throw new Error('Uplaod image is required.');
-                }
-            }
-            return true;
-            }),
+        // body("image").custom((value, { req })=>{
+        //     if(req.body.image_type_format !== 'base64'){
+        //         let uploadedFile = req.files.image;
+        //         if(uploadedFile.name !== ''){
+        //             let fileExtension = uploadedFile.mimetype.split('/')[1];
+        //             const allowedExtension = ["jpeg", "png", "jpg"];
+        //             if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
+        //                 throw new Error('File format is not allowed, use only jpeg and png.');
+        //             }
+        //         }
+        //         else{
+        //             throw new Error('Upload image is required.');
+        //         }
+        //     }
+        //     else{
+        //         if(req.body.image !== ''){
+        //             let imageInfo = helper_image.getBase64ImageInfo(req.body.image);
+        //             const allowedExtension = ["jpeg", "png", "jpg"];
+        //             if(allowedExtension.indexOf(imageInfo.extention.toLowerCase()) < 0){
+        //                 throw new Error('File format is not allowed, use only jpeg and png.');
+        //             }
+        //         }
+        //         else{
+        //             throw new Error('Upload image is required.');
+        //         }
+        //     }
+        //     return true;
+        //     }),
     ],
     editUserProfile
 );
@@ -251,7 +251,7 @@ router.post("/api/add_exercise",
             }
           }
           else{
-            throw new Error('Uplaod image is required.');
+            throw new Error('Upload image is required.');
           }
           return true;
       }),
@@ -354,7 +354,7 @@ router.post("/api/add_equipment",
             }
           }
           else{
-            throw new Error('Uplaod image is required.');
+            throw new Error('Upload image is required.');
           }
           return true;
       }),
@@ -459,7 +459,7 @@ router.post(
             }
         }
         else{
-          throw new Error('Uplaod Thumb image is required.');
+          throw new Error('Upload Thumb image is required.');
         }
         return true;
     }),
@@ -473,7 +473,7 @@ router.post(
         }
     }
     else{
-        throw new Error('Uplaod Video is required.');
+        throw new Error('Upload Video is required.');
     }
     return true;
     }),
@@ -599,7 +599,7 @@ router.post("/api/add_workout",
                 }
             }
             else{
-                throw new Error('Uplaod image is required.');
+                throw new Error('Upload image is required.');
             }
         }
         else{
@@ -611,7 +611,7 @@ router.post("/api/add_workout",
                 }
             }
             else{
-                throw new Error('Uplaod image is required.');
+                throw new Error('Upload image is required.');
             }
         }
         return true;
