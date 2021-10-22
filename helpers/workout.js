@@ -200,3 +200,50 @@ exports.addBulkExerciseIntoWorkout = async (req, workout_id) => {
     }
   });
 }
+
+exports.removeExistingExercises =  async (workout_id) => {
+  return new Promise((resolve, reject)=>{
+    try {
+      var where = {};
+      where['workout_id = ?'] = workout_id;
+      var conditions = helper_general.buildDeleteConditionsString(where);
+      var sql = "DELETE FROM `workouts_exercises` WHERE "+conditions.where;
+      dbConnection.execute(sql,conditions.values).then((row) => {
+        //ResultSetHeader
+        resolve(row);
+      }, (err) => {
+        error.push(err.message);
+        reject(error);
+      })
+    } catch(err) {
+      reject(err);
+    }
+  });
+}
+
+exports.getWorkoutDetail = async (req) => {
+  return new Promise((resolve, reject)=>{
+    var where = {};
+    if(req.body.id!==''){
+      where['id = ?'] = req.body.id;
+      //where['b.user_id = ?'] = req.user.id;
+    }
+    var conditions = helper_general.buildConditionsString(where);
+    var sql = '';
+    sql += "SELECT * FROM `workouts`";
+    sql += " WHERE "+conditions.where;
+    dbConnection.execute(sql,conditions.values).then((row) => {
+        row = JSON.parse(JSON.stringify(row));
+        if(row[0].length > 0){
+            row[0][0]['image_original_path'] = process.env.BASE_URL+'/uploads/workout/'+row[0][0]['image'];
+            row[0][0]['image_thumb_path'] = process.env.BASE_URL+'/uploads/workout/thumb/'+row[0][0]['image'];
+            resolve(row[0][0]);
+        }
+        else{
+          reject("Data does not exist.");
+        }
+    }, (err) => {
+        reject(err);
+    })
+  });
+}

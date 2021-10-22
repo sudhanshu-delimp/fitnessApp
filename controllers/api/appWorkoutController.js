@@ -2,7 +2,6 @@ const { validationResult } = require("express-validator");
 const dbConnection = require("../../utils/dbConnection");
 const helper_general = require("../../helpers/general");
 const helper_workout = require("../../helpers/workout");
-const helper_exercise = require("../../helpers/exercise");
 const helper_image = require("../../helpers/image");
 
 exports.addWorkout = async (req, res, next) => {
@@ -447,7 +446,7 @@ exports.addWorkout = async (req, res, next) => {
           case 'add':{
             update['is_archived = ?'] = '1';
           } break;
-          case 'remove':{
+          case 'restore':{
             update['is_archived = ?'] = '0';
           } break;
         }
@@ -466,6 +465,51 @@ exports.addWorkout = async (req, res, next) => {
       }
       res.json(response);
     } catch (e) {
+      next(e);
+    }
+  }
+
+  exports.deleteWorkout = async (req, res, next) => {
+    const errors = validationResult(req);
+    var error = [];
+    var response = {};
+    response['status'] = '0';
+    response['data'] = {};
+    if (!errors.isEmpty()) {
+      error.push(errors.array()[0].msg);
+    }
+    else{
+      await helper_workout.getWorkoutDetail(req).then(async (row)=>{
+        old_image =  row.image;
+        await helper_image.removeImage(`public/uploads/workout/${old_image}`);
+        await helper_image.removeImage(`public/uploads/workout/thumb/${old_image}`);
+      },
+      err=>{
+        error.push(err);
+      });
+    }
+    try {
+      if(error.length == 0){
+        var where = {};
+        where['id = ?'] = req.body.id;
+        var conditions = helper_general.buildDeleteConditionsString(where);
+        var sql = "DELETE FROM `workouts` WHERE "+conditions.where;
+        await dbConnection.execute(sql,conditions.values).then((row) => {
+          //ResultSetHeader
+          helper_workout.removeExistingExercises(req.body.id);
+          response['status'] = '1';
+          response['data']['message'] = "Data has been deleted successfully.";
+        }, (err) => {
+          error.push(err.message);
+          response['data']['error'] = error;
+        })
+      }
+      else{
+        response['data']['error'] = error;
+      }
+      res.json(response);
+    }
+    catch (e) {
       next(e);
     }
   }

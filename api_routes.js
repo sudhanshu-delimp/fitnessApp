@@ -53,6 +53,7 @@ const {
     getWorkoutDetail,
     finishWorkout,
     archiveWorkout,
+    deleteWorkout,
 } = require("./controllers/api/appWorkoutController");
 
 router.post("/api/login",
@@ -796,7 +797,7 @@ router.post(
         .notEmpty()
         .withMessage("Action is required")
         .custom((value, {req})=>{
-            const allowedAction = ["add", "remove"];
+            const allowedAction = ["add","restore"];
             if(allowedAction.indexOf(req.body.action.toLowerCase()) < 0){
                 throw new Error('Only add and remove actions are allowed.');
             }
@@ -804,5 +805,17 @@ router.post(
         }),    
     ],
     archiveWorkout
+);
+
+router.post(
+    "/api/delete_workout",
+    [
+      helper_general.verifyToken,
+      body("id", "Invalid id.")
+      .notEmpty()
+      .escape()
+      .trim(),
+    ],
+    deleteWorkout
 );
 module.exports = router;
