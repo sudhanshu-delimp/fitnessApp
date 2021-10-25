@@ -93,7 +93,7 @@ exports.addWorkout = async (req, res, next) => {
         var insert = {};
         insert['workout_id'] = req.body.workout_id;
         insert['exercise_id'] = req.body.exercise_id;
-        insert['left_duration'] = parseInt(req.body.exercise_duration*60);
+        insert['left_duration'] = req.body.exercise_duration;
         insert['status'] = 'Pending';
         var conditions = helper_general.buildInsertConditionsString(insert);
         var sql = "INSERT INTO `workouts_exercises`("+conditions.inserts+") VALUES("+conditions.fields+")";
@@ -253,7 +253,7 @@ exports.addWorkout = async (req, res, next) => {
             row = JSON.parse(JSON.stringify(row));
             if(row[0].length > 0){
               row[0].forEach(function(item,index){
-                row[0][index]['left_duration'] = (item.left_duration !== 0) ? Math.round(item.left_duration)/60:0;
+                row[0][index]['left_duration'] = (item.left_duration !== 0) ? item.left_duration:0;
                 row[0][index]['rest_time'] = (item.rest_time !== null) ? item.rest_time:0;
                 row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+item.image;
                 row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/thumb/'+item.image;
