@@ -75,7 +75,7 @@ function workoutDuration(workout_id){
     sql+=" WHERE "+conditions.where;
     try{
       let row = await dbConnection.execute(sql,conditions.values);
-      resolve((row[0][0].workout_duration > 0)?row[0][0].workout_duration:0);
+      resolve((row[0][0].workout_duration > 0)?row[0][0].workout_duration/60:0);
     } catch(e){
       reject(e);
     }
@@ -177,7 +177,7 @@ exports.addBulkExerciseIntoWorkout = async (req, workout_id) => {
             data: JSON.stringify({
                 workout_id: workout_id,
                 exercise_id: id,
-                exercise_duration:response.duration
+                exercise_duration:parseInt(response.duration*60)
             })
         };
         axios(options).then(response => {
