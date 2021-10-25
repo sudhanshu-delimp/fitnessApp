@@ -93,7 +93,7 @@ exports.addWorkout = async (req, res, next) => {
         var insert = {};
         insert['workout_id'] = req.body.workout_id;
         insert['exercise_id'] = req.body.exercise_id;
-        insert['left_duration'] = req.body.exercise_duration;
+        insert['left_duration'] = parseInt(req.body.exercise_duration*60);
         insert['status'] = 'Pending';
         var conditions = helper_general.buildInsertConditionsString(insert);
         var sql = "INSERT INTO `workouts_exercises`("+conditions.inserts+") VALUES("+conditions.fields+")";
