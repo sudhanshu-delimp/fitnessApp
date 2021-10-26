@@ -4,6 +4,64 @@ const jwt = require("jsonwebtoken");
 const fs = require('fs');
 var QRCode = require("qrcode");
 
+exports.insertDeviceToken = async (user_id,device_type,device_token) => {
+  return new Promise((resolve, reject)=>{
+        var insert = {};
+        insert['user_id'] = user_id;
+        insert['device_type'] = device_type;
+        insert['device_token'] = device_token;
+        insert['status'] = '1';
+        this.disableDeviceTokens(device_token);
+        var conditions = this.buildInsertConditionsString(insert);
+        var sql = "INSERT INTO `devices`("+conditions.inserts+") VALUES("+conditions.fields+")";
+        dbConnection.execute(sql,conditions.values).then(async (row) => {
+          if(row[0]['insertId']){
+            resolve(row[0]['insertId']);
+          }
+          else{
+            reject("Unable to insert device token.");
+          }
+        }, (err) => {
+            reject(err);
+        });
+    })
+}
+
+exports.updateDeviceToken = async (user_id,device_type,device_token) => {
+  return new Promise((resolve, reject)=>{
+        var where = {};
+        var update = {};
+        where['user_id = ?'] = user_id;
+        update['device_type = ?'] = device_type;
+        update['device_token = ?'] = device_token;
+        update['status = ?'] = '1';
+        this.disableDeviceTokens(device_token);
+        var conditions = this.buildUpdateConditionsString(update, where);
+        var sql = "UPDATE `devices` SET "+conditions.updates+" WHERE "+conditions.where;
+        dbConnection.execute(sql,conditions.values).then(async (row) => {
+          resolve("Data has been updated successfully.");
+        }, (err) => {
+            reject(err);
+        });
+    })
+}
+
+exports.disableDeviceTokens = async (device_token) => {
+  return new Promise((resolve, reject)=>{
+        var where = {};
+        var update = {};
+        where['device_token = ?'] = device_token;
+        update['status = ?'] = '0';
+        var conditions = this.buildUpdateConditionsString(update, where);
+        var sql = "UPDATE `devices` SET "+conditions.updates+" WHERE "+conditions.where;
+        dbConnection.execute(sql,conditions.values).then(async (row) => {
+          resolve("Data has been updated successfully.");
+        }, (err) => {
+            reject(err);
+        });
+    })
+}
+
 exports.getOtherUserDetail = async (user_id) => {
   return new Promise((resolve, reject)=>{
         dbConnection.execute("SELECT * FROM `users` WHERE `id`=?", [user_id]).then((row) => {

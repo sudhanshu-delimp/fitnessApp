@@ -178,7 +178,7 @@ router.post(
         //         let uploadedFile = req.files.image;
         //         if(uploadedFile.name !== ''){
         //             let fileExtension = uploadedFile.mimetype.split('/')[1];
-        //             const allowedExtension = ["jpeg", "png", "jpg"];
+        //             const allowedExtension = ["jpeg", "png", "jpg","gif"];
         //             if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
         //                 throw new Error('File format is not allowed, use only jpeg and png.');
         //             }
@@ -190,7 +190,7 @@ router.post(
         //     else{
         //         if(req.body.image !== ''){
         //             let imageInfo = helper_image.getBase64ImageInfo(req.body.image);
-        //             const allowedExtension = ["jpeg", "png", "jpg"];
+        //             const allowedExtension = ["jpeg", "png", "jpg","gif"];
         //             if(allowedExtension.indexOf(imageInfo.extention.toLowerCase()) < 0){
         //                 throw new Error('File format is not allowed, use only jpeg and png.');
         //             }
@@ -246,7 +246,7 @@ router.post("/api/add_exercise",
           let uploadedFile = req.files.image;
           if(uploadedFile.name !== ''){
             let fileExtension = uploadedFile.mimetype.split('/')[1];
-            const allowedExtension = ["jpeg", "png", "jpg"];
+            const allowedExtension = ["jpeg", "png", "jpg","gif"];
             if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
                 throw new Error('File format is not allowed, use only jpeg and png.');
             }
@@ -301,7 +301,7 @@ router.post(
           if(req.files!==null){
             let uploadedFile = req.files.image;
             let fileExtension = uploadedFile.mimetype.split('/')[1];
-            const allowedExtension = ["jpeg", "png", "jpg"];
+            const allowedExtension = ["jpeg", "png", "jpg","gif","gif"];
             if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
                 throw new Error('File format is not allowed, use only jpeg and png.');
             }
@@ -349,7 +349,7 @@ router.post("/api/add_equipment",
           let uploadedFile = req.files.image;
           if(uploadedFile.name !== ''){
             let fileExtension = uploadedFile.mimetype.split('/')[1];
-            const allowedExtension = ["jpeg", "png", "jpg"];
+            const allowedExtension = ["jpeg", "png", "jpg","gif"];
             if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
                 throw new Error('File format is not allowed, use only jpeg and png.');
             }
@@ -391,7 +391,7 @@ router.post(
           if(req.files!==null){
             let uploadedFile = req.files.image;
             let fileExtension = uploadedFile.mimetype.split('/')[1];
-            const allowedExtension = ["jpeg", "png", "jpg"];
+            const allowedExtension = ["jpeg", "png", "jpg","gif"];
             if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
                 throw new Error('File format is not allowed, use only jpeg and png.');
             }
@@ -454,7 +454,7 @@ router.post(
         let uploadedFile = req.files.thumb_image;
         if(uploadedFile.name !== ''){
           let fileExtension = uploadedFile.mimetype.split('/')[1];
-            const allowedExtension = ["jpeg", "png", "jpg"];
+            const allowedExtension = ["jpeg", "png", "jpg","gif"];
             if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
                 throw new Error('Thumb image File format is not allowed, use only jpeg and png.');
             }
@@ -507,7 +507,7 @@ router.post(
         if(req.files !== null && req.files.thumb_image!==undefined){
           let uploadedFile = req.files.thumb_image;
           let fileExtension = uploadedFile.mimetype.split('/')[1];
-            const allowedExtension = ["jpeg", "png", "jpg"];
+            const allowedExtension = ["jpeg", "png", "jpg","gif"];
             if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
                 throw new Error('Thumb image File format is not allowed, use only jpeg and png.');
             }
@@ -594,7 +594,7 @@ router.post("/api/add_workout",
             let uploadedFile = req.files.image;
             if(uploadedFile.name !== ''){
                 let fileExtension = uploadedFile.mimetype.split('/')[1];
-                const allowedExtension = ["jpeg", "png", "jpg"];
+                const allowedExtension = ["jpeg", "png", "jpg","gif"];
                 if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
                     throw new Error('File format is not allowed, use only jpeg and png.');
                 }
@@ -606,7 +606,7 @@ router.post("/api/add_workout",
         else{
             if(req.body.image !== ''){
                 let imageInfo = helper_image.getBase64ImageInfo(req.body.image);
-                const allowedExtension = ["jpeg", "png", "jpg"];
+                const allowedExtension = ["jpeg", "png", "jpg","gif"];
                 if(allowedExtension.indexOf(imageInfo.extention.toLowerCase()) < 0){
                     throw new Error('File format is not allowed, use only jpeg and png.');
                 }
