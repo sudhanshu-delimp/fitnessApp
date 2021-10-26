@@ -142,7 +142,7 @@ exports.user_login = async (req, res, next) => {
         var token = jwt.sign({ id: account.id,email: account.email,phone: account.phone}, process.env.JWT_SECRET_KEY, {
           expiresIn: 86400 // 24 hours
         });
-        helper_general.updateDeviceToken(account.id, req.body.device_type, req.body.device_token);
+        //helper_general.updateDeviceToken(account.id, req.body.device_type, req.body.device_token);
         response['status'] = '1';
         response['data']['user'] = account;
         response['data']['accessToken'] = token;
