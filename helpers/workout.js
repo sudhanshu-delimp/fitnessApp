@@ -44,7 +44,7 @@ exports.getWorkouts = async (req, res, next) => {
             })
             tasks.push(function(cb){
               exports.workoutProgress(item.id).then((data)=>{
-                row[0][index]['workout_progress_percentage '] = data;
+                row[0][index]['workout_progress_percentage'] = data;
                 cb(null, data )
               },(err)=>{
                 cb(null,err)
