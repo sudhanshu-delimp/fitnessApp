@@ -86,11 +86,9 @@ exports.workoutProgress = (workout_id) => {
   return new Promise(async (resolve, reject)=>{
     try {
       let workout_progress = 0;
-      let total_exercise_count =  await exports.getWorkoutExerciseCount(workout_id);
-      let done_exercise_count =  await exports.getWorkoutDoneExerciseCount(workout_id);
-      if(total_exercise_count!==0){
-          workout_progress = (parseInt(done_exercise_count)*100)/parseInt(total_exercise_count);
-      }
+      let workout_actual_time =  await exports.getWorkoutActualTotalTime(workout_id);
+      let workout_spend_time =  await exports.getWorkoutSpendTotalTime(workout_id);
+      workout_progress = Math.round((parseInt(workout_spend_time)*100)/parseInt(workout_actual_time));
       resolve(workout_progress);
     }
     catch (e) {
@@ -98,6 +96,36 @@ exports.workoutProgress = (workout_id) => {
     }
   });
 
+}
+
+exports.getWorkoutActualTotalTime = (workout_id) => {
+  return new Promise(async (resolve, reject)=>{
+    var where = {};
+    where['we.workout_id = ?'] = workout_id;
+    var conditions = helper_general.buildConditionsString(where);
+    sql = "SELECT sum(we.actual_duration) as total_actual_duration FROM `workouts_exercises` AS we";
+    sql+=" WHERE "+conditions.where;
+    let row = await dbConnection.execute(sql,conditions.values).then((row)=>{
+      resolve(row[0][0].total_actual_duration);
+    },(err)=>{
+      reject(err.message);
+    });
+  });
+}
+
+exports.getWorkoutSpendTotalTime = (workout_id) => {
+  return new Promise(async (resolve, reject)=>{
+    var where = {};
+    where['we.workout_id = ?'] = workout_id;
+    var conditions = helper_general.buildConditionsString(where);
+    sql = "SELECT sum(we.spend_duration) as total_spend_duration FROM `workouts_exercises` AS we";
+    sql+=" WHERE "+conditions.where;
+    let row = await dbConnection.execute(sql,conditions.values).then((row)=>{
+      resolve(row[0][0].total_spend_duration);
+    },(err)=>{
+      reject(err.message);
+    });
+  });
 }
 
 exports.getWorkoutExerciseCount = (workout_id) => {

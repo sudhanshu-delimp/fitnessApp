@@ -93,6 +93,7 @@ exports.addWorkout = async (req, res, next) => {
         var insert = {};
         insert['workout_id'] = req.body.workout_id;
         insert['exercise_id'] = req.body.exercise_id;
+        insert['actual_duration'] = req.body.exercise_duration;
         insert['left_duration'] = req.body.exercise_duration;
         insert['status'] = 'Pending';
         var conditions = helper_general.buildInsertConditionsString(insert);
@@ -245,7 +246,7 @@ exports.addWorkout = async (req, res, next) => {
         var where = {};
           where['we.workout_id = ?'] = req.body.id;
           var conditions = helper_general.buildConditionsString(where);
-          var sql = "SELECT we.id,we.left_duration,we.rest_time,we.status,e.id as exercise_id,e.title,e.image FROM `workouts_exercises` as we";
+          var sql = "SELECT we.id,we.left_duration,we.actual_duration,we.rest_time,we.status,e.id as exercise_id,e.title,e.image FROM `workouts_exercises` as we";
           sql += " LEFT JOIN `exercises` as e ON (we.exercise_id = e.id)";
           sql += " WHERE "+conditions.where;
           sql+=" ORDER BY we.position ASC";
@@ -340,6 +341,7 @@ exports.addWorkout = async (req, res, next) => {
         var update = {};
         where['id = ?'] = req.body.id;
         update['left_duration = ?'] = req.body.left_duration;
+        update['spend_duration = ?'] = parseInt(req.body.actual_duration - req.body.left_duration);
         update['status = ?'] = req.body.status;
         var conditions = helper_general.buildUpdateConditionsString(update, where);
         var sql = "UPDATE `workouts_exercises` SET "+conditions.updates+" WHERE "+conditions.where;
