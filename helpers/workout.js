@@ -128,6 +128,21 @@ exports.getWorkoutSpendTotalTime = (workout_id) => {
   });
 }
 
+exports.getWorkoutLeftotalTime = (workout_id) => {
+  return new Promise(async (resolve, reject)=>{
+    var where = {};
+    where['we.workout_id = ?'] = workout_id;
+    var conditions = helper_general.buildConditionsString(where);
+    sql = "SELECT sum(we.left_duration) as total_left_duration FROM `workouts_exercises` AS we";
+    sql+=" WHERE "+conditions.where;
+    let row = await dbConnection.execute(sql,conditions.values).then((row)=>{
+      resolve(row[0][0].total_left_duration);
+    },(err)=>{
+      reject(err.message);
+    });
+  });
+}
+
 exports.getWorkoutExerciseCount = (workout_id) => {
   return new Promise(async (resolve, reject)=>{
     var where = {};
@@ -172,6 +187,9 @@ exports.getWorkDetail = async (req) => {
         row = JSON.parse(JSON.stringify(row));
         if(row[0].length > 0){
             row[0][0]['workout_duration'] = await workoutDuration(row[0][0]['id']);
+            row[0][0]['workout_left_duration'] = await this.getWorkoutLeftotalTime(row[0][0]['id']);
+            row[0][0]['workout_actual_duration'] = await this.getWorkoutActualTotalTime(row[0][0]['id']);
+            row[0][0]['workout_spend_duration'] = await this.getWorkoutSpendTotalTime(row[0][0]['id']);
             row[0][0]['workout_progress_percentage'] = await exports.workoutProgress(row[0][0]['id']);
             row[0][0]['image_original_path'] = process.env.BASE_URL+'/uploads/workout/'+row[0][0]['image'];
             row[0][0]['image_thumb_path'] = process.env.BASE_URL+'/uploads/workout/thumb/'+row[0][0]['image'];
