@@ -205,6 +205,8 @@ exports.getWorkDetail = async (req) => {
 }
 
 exports.addBulkExerciseIntoWorkout = async (req, workout_id) => {
+  var response = {};
+  var error = [];
   let tasks = [];
   let exercises = req.body.exercises.split(",");
   let accessToken = req.body.token || req.query.token || req.headers["x-access-token"];
@@ -233,8 +235,7 @@ exports.addBulkExerciseIntoWorkout = async (req, workout_id) => {
           cb(null,err)
         });
       },(err)=>{
-        error.push(err.message);
-        response['data']['error'] = error;
+        //handel error
       });
     });
   });

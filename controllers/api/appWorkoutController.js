@@ -516,3 +516,81 @@ exports.addWorkout = async (req, res, next) => {
       next(e);
     }
   }
+
+  exports.addBulkExerciseIntoWorkout = async (req, res, next) => {
+    const errors = validationResult(req);
+    var error = [];
+    var response = {};
+    response['status'] = '0';
+    response['data'] = {};
+    if (!errors.isEmpty()) {
+      error.push(errors.array()[0].msg);
+    }
+
+    try {
+      if(error.length == 0){
+        await helper_workout.addBulkExerciseIntoWorkout(req, req.body.workout_id).then((res)=>{
+          response['status'] = '1';
+          response['data']['message'] = "Data has been saved successfully.";
+        }, (err)=>{
+          response['data']['error'] = err;
+        });
+      }
+      else{
+        response['data']['error'] = error;
+      }
+      res.json(response);
+    }
+    catch (e) {
+        next(e);
+    }
+  }
+
+  exports.getUnselectedExercises = async (req, res, next) => {
+    const errors = validationResult(req);
+    var error = [];
+    var response = {};
+    response['status'] = '0';
+    response['data'] = {};
+    if (!errors.isEmpty()) {
+      error.push(errors.array()[0].msg);
+    }
+
+    try {
+      if(error.length == 0){
+        var where = {};
+        if(req.body.exercises!=''){
+            var exercises = req.body.exercises;
+            exercises = exercises.split(",");
+            where['id NOT IN (?)'] = exercises;
+        }
+        var conditions = helper_general.buildConditionsString(where);
+        sql = "SELECT exercises.* FROM `exercises` WHERE "+conditions.where;
+        sql+=" ORDER BY exercises.id ASC";
+        await dbConnection.query(sql,conditions.values).then((row) => {
+          row = JSON.parse(JSON.stringify(row));
+          if(row[0].length > 0){
+            row[0].forEach(function(item,index){
+              row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+item.image;
+              row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/thumb/'+item.image;
+            });
+            response['status'] = '1';
+            response['data']['exercises'] = row[0];
+          }
+          else{
+            error.push("data does not exist");
+            response['data']['error'] = error;
+          }
+        }, (err) => {
+          error.push(err.message);
+          response['data']['error'] = error;
+        })
+      }
+      else{
+        response['data']['error'] = error;
+      }
+      res.json(response);
+    } catch (e) {
+      next(e);
+    }
+  }

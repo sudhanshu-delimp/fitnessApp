@@ -54,6 +54,8 @@ const {
     finishWorkout,
     archiveWorkout,
     deleteWorkout,
+    addBulkExerciseIntoWorkout,
+    getUnselectedExercises,
 } = require("./controllers/api/appWorkoutController");
 
 router.post("/api/login",
@@ -503,7 +505,7 @@ router.post(
       .escape()
       .trim(),
       body("thumb_image").custom((value, { req })=>{
-        
+
         if(req.files !== null && req.files.thumb_image!==undefined){
           let uploadedFile = req.files.thumb_image;
           let fileExtension = uploadedFile.mimetype.split('/')[1];
@@ -515,7 +517,7 @@ router.post(
         return true;
     }),
     body("video").custom((value, { req })=>{
-        
+
         if(req.files !== null && req.files.video!==undefined){
             let uploadedFile = req.files.video;
             let fileExtension = uploadedFile.mimetype.split('/')[1];
@@ -641,7 +643,7 @@ router.post("/api/add_exercise_into_workout",
                     });
                 }
                 return true;
-            }),  
+            }),
     ],
       addExerciseIntoWorkout
 );
@@ -802,7 +804,7 @@ router.post(
                 throw new Error('Only add and remove actions are allowed.');
             }
             return true;
-        }),    
+        }),
     ],
     archiveWorkout
 );
@@ -817,5 +819,25 @@ router.post(
       .trim(),
     ],
     deleteWorkout
+);
+
+router.post("/api/add_bulk_exercise_into_workout",
+    [
+        helper_general.verifyToken,
+        body("workout_id")
+            .notEmpty()
+            .withMessage("Workout id is required."),
+        body("exercises")
+            .notEmpty()
+            .withMessage("No exercises are found to add into the workout."),
+    ],
+      addBulkExerciseIntoWorkout
+);
+
+router.post("/api/get_unselected_exercises",
+    [
+        helper_general.verifyToken,
+    ],
+      getUnselectedExercises
 );
 module.exports = router;
