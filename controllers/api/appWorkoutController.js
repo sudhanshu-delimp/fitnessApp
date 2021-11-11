@@ -594,3 +594,93 @@ exports.addWorkout = async (req, res, next) => {
       next(e);
     }
   }
+
+  exports.updateWorkout = async (req, res, next) => {
+      const errors = validationResult(req);
+      var error = [];
+      var response = {};
+      response['status'] = '0';
+      response['data'] = {};
+      let image_name = '';
+      if (!errors.isEmpty()) {
+        error.push(errors.array()[0].msg);
+      }
+      else{
+        if((req.body.image && req.body.image!==null) || (req.files && req.files!==null)){
+          let old_image = '';
+          let image_dir = 'public/uploads/workout';
+          let thumb_image_dir = 'public/uploads/workout/thumb';
+          await helper_workout.getWorkoutDetail(req).then(async (row)=>{
+            old_image =  row.image;
+            await helper_image.removeImage(image_dir+`/${old_image}`);
+            await helper_image.removeImage(thumb_image_dir+`/${old_image}`);
+
+            if(req.body.image_type_format === 'base64'){
+              if(req.body.image && req.body.image!==undefined){
+                let image_info = helper_image.getBase64ImageInfo(req.body.image);
+                let fileExtension = image_info.extention;
+                image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
+                await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
+                helper_image.uploadBase64Image(image_info.image_string, image_dir, image_name);
+                helper_image.resize(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
+                });
+              }
+            }
+            else{
+              if(req.files.image !== undefined){
+                let uploadedFile = req.files.image;
+                let fileExtension = uploadedFile.mimetype.split('/')[1];
+                image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
+                await helper_image.createDirectories([image_dir,thumb_image_dir]).then(async (res)=>{
+                  await uploadedFile.mv(image_dir+`/${image_name}`, (err ) => {
+                    if (err) {
+                      error.push(err);
+                    }
+                    helper_image.resize(image_dir+`/${image_name}`,thumb_image_dir+`/${image_name}`,300,300);
+                  });
+                });
+              }
+            }
+          },
+          err=>{
+            error.push(err);
+            response['data']['error'] = error;
+          });
+        }
+      }
+      try {
+        if(error.length == 0){
+          var where = {};
+          var update = {};
+          where['id = ?'] = req.body.id;
+          update['title = ?'] = req.body.title;
+          update['schedule_time = ?'] = req.body.schedule_time;
+          update['schedule_date = ?'] = req.body.schedule_date;
+          update['description = ?'] = req.body.description;
+          if(image_name!=''){
+              update['image = ?'] = image_name;
+          }
+          var conditions = helper_general.buildUpdateConditionsString(update, where);
+          var sql = "UPDATE `workouts` SET "+conditions.updates+" WHERE "+conditions.where;
+          await dbConnection.execute(sql,conditions.values).then(async (row) => {
+            //ResultSetHeader
+            if(req.body.exercises !== ''){
+               helper_workout.addBulkExerciseIntoWorkout(req, req.body.id);
+            }
+            response['status'] = '1';
+            response['data']['workout_id'] = req.body.id;
+            response['data']['message'] = "Workout has been updated successfully.";
+          }, (err) => {
+            error.push(err.message);
+            response['data']['error'] = error;
+          })
+        }
+        else{
+          response['data']['error'] = error;
+        }
+        res.json(response);
+      }
+      catch (e) {
+          next(e);
+      }
+    }

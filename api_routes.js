@@ -56,6 +56,7 @@ const {
     deleteWorkout,
     addBulkExerciseIntoWorkout,
     getUnselectedExercises,
+    updateWorkout,
 } = require("./controllers/api/appWorkoutController");
 
 router.post("/api/login",
@@ -839,5 +840,59 @@ router.post("/api/get_unselected_exercises",
         helper_general.verifyToken,
     ],
       getUnselectedExercises
+);
+
+router.post("/api/update_workout",
+    [
+      helper_general.verifyToken,
+      body("id")
+          .notEmpty()
+          .withMessage("Workout Id is required")
+          .escape()
+          .trim(),
+      body("title")
+          .notEmpty()
+          .withMessage("Title is required")
+          .escape()
+          .trim(),
+      body("schedule_time", "Invalid schedule time")
+          .notEmpty()
+          .escape()
+          .trim(),
+      body("schedule_date", "Invalid schedule date")
+          .notEmpty()
+          .escape()
+          .trim(),
+      body("description")
+          .notEmpty()
+          .withMessage("Description is required")
+          .escape()
+          .trim()
+          .isLength({ min: 10 })
+          .withMessage("Description's minimum length should be of 10 characters"),
+        body("image").custom((value, { req })=>{
+        if(req.body.image_type_format !== 'base64'){
+            let uploadedFile = req.files.image;
+            if(uploadedFile.name !== ''){
+                let fileExtension = uploadedFile.mimetype.split('/')[1];
+                const allowedExtension = ["jpeg", "png", "jpg","gif"];
+                if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
+                    throw new Error('File format is not allowed, use only jpeg and png.');
+                }
+            }
+        }
+        else{
+            if(req.body.image !== ''){
+                let imageInfo = helper_image.getBase64ImageInfo(req.body.image);
+                const allowedExtension = ["jpeg", "png", "jpg","gif"];
+                if(allowedExtension.indexOf(imageInfo.extention.toLowerCase()) < 0){
+                    throw new Error('File format is not allowed, use only jpeg and png.');
+                }
+            }
+        }
+        return true;
+        }),
+      ],
+    updateWorkout
 );
 module.exports = router;
