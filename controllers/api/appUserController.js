@@ -73,8 +73,10 @@ exports.user_register = async (req, res, next) => {
       insert['role'] = 'app_user';
       insert['name'] = req.body.name;
       insert['email'] = req.body.email;
-      insert['iso2'] = req.body.iso2;
-      insert['dialCode'] = req.body.dialCode;
+      if(req.body.iso2){
+        insert['iso2'] = req.body.iso2;
+        insert['dialCode'] = req.body.dialCode;
+      }
       insert['phone'] = req.body.phone;
       insert['password'] = hashPass;
       var conditions = helper_general.buildInsertConditionsString(insert);
@@ -363,8 +365,10 @@ exports.editUserProfile = async (req, res, next) => {
       where['id = ?'] = req.user.id;
       update['name = ?'] = req.body.name;
       update['email = ?'] = req.body.email;
-      update['iso2 = ?'] = req.body.iso2;
-      update['dialCode = ?'] = req.body.dialCode;
+      if(req.body.iso2){
+        update['iso2 = ?'] = req.body.iso2;
+        update['dialCode = ?'] = req.body.dialCode;
+      }
       update['phone = ?'] = req.body.phone;
       if(image_name!==''){
         update['image = ?'] = image_name;
