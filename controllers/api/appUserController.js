@@ -80,7 +80,7 @@ exports.user_register = async (req, res, next) => {
       var conditions = helper_general.buildInsertConditionsString(insert);
       var sql = "INSERT INTO `users`("+conditions.inserts+") VALUES("+conditions.fields+")";
       await dbConnection.execute(sql,conditions.values).then(async (row) => {
-        //helper_general.insertDeviceToken(row[0]['insertId'], req.body.device_type, req.body.device_token);
+        helper_general.insertDeviceToken(row[0]['insertId'], req.body.device_type, req.body.device_token);
         var params = {'user_name':req.body.name,'email':req.body.email,'password':req.body.password};
         await helper_email.sendEmail(req.body.email, params, 11).then((result)=>{
           response['status'] = '1';
@@ -142,7 +142,7 @@ exports.user_login = async (req, res, next) => {
         var token = jwt.sign({ id: account.id,email: account.email,phone: account.phone}, process.env.JWT_SECRET_KEY, {
           expiresIn: 86400 // 24 hours
         });
-        //helper_general.updateDeviceToken(account.id, req.body.device_type, req.body.device_token);
+        helper_general.updateDeviceToken(account.id, req.body.device_type, req.body.device_token);
         response['status'] = '1';
         response['data']['user'] = account;
         response['data']['accessToken'] = token;
