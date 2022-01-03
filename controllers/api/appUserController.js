@@ -72,6 +72,7 @@ exports.user_register = async (req, res, next) => {
       var insert = {};
       insert['role'] = 'app_user';
       insert['name'] = req.body.name;
+      insert['last_name'] = req.body.last_name;
       insert['email'] = req.body.email;
       if(req.body.iso2){
         insert['iso2'] = req.body.iso2;
@@ -364,6 +365,7 @@ exports.editUserProfile = async (req, res, next) => {
       var update = {};
       where['id = ?'] = req.user.id;
       update['name = ?'] = req.body.name;
+      update['last_name = ?'] = req.body.last_name;
       update['email = ?'] = req.body.email;
       if(req.body.iso2){
         update['iso2 = ?'] = req.body.iso2;

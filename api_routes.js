@@ -75,11 +75,15 @@ router.post("/api/login",
 );
 router.post("/api/register",
     [
-      body("name", "The name must be of minimum 3 characters length")
-          .notEmpty()
-          .escape()
-          .trim()
-          .isLength({ min: 3 }),
+    body("name", "The first name must be of minimum 3 characters length")
+        .notEmpty()
+        .escape()
+        .trim()
+        .isLength({ min: 3 }),
+    body("last_name", "The last name must be of minimum 2 characters length")
+        .escape()
+        .trim()
+        .isLength({ min: 2 }),
       body("email", "Invalid email address.")
           .notEmpty()
           .escape()
@@ -158,6 +162,10 @@ router.post(
             .escape()
             .trim()
             .isLength({ min: 3 }),
+        body("last_name", "The name must be of minimum 2 characters length")
+            .escape()
+            .trim()
+            .isLength({ min: 2 }),    
         body("email", "Invalid email address.")
             .notEmpty()
             .escape()
