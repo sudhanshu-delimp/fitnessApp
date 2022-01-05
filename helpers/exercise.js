@@ -57,7 +57,7 @@ exports.getExerciseDetail = async (req) => {
     var conditions = helper_general.buildConditionsString(where);
     var sql = '';
     sql += "SELECT e.*,b.id as bookmark_id FROM `exercises` as e";
-    sql += " LEFT JOIN `bookmarks` as b ON(e.id = b.exercise_id AND b.user_id="+req.user.id+")";
+    sql += " LEFT JOIN `bookmarks` as b ON(e.id = b.source_id AND b.user_id="+req.user.id+")";
     sql += " WHERE "+conditions.where;
     dbConnection.execute(sql,conditions.values).then((row) => {
         row = JSON.parse(JSON.stringify(row));
