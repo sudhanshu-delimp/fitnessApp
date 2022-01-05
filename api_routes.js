@@ -11,6 +11,7 @@ const {
     updateUser,
     deleteUser,
     editUserProfile,
+    getBookmarks,
 } = require("./controllers/api/appUserController");
 
 const {
@@ -30,6 +31,8 @@ const {
     deleteEquipment,
     getEquipmentListing,
     getEquipmentRelatedExercises,
+    bookmarkEquipment,
+    getBookmarkEquipments,
 } = require("./controllers/api/appEquipmentController");
 
 const {
@@ -723,7 +726,7 @@ router.post(
         }
         if(req.body.id !== 0 && req.body.action === 'add'){
             var fields = {};
-            fields['exercise_id = ?'] = req.body.id;
+            fields['source_id = ?'] = req.body.id;
             fields['user_id = ?'] = req.user.id;
             await helper_general.bookmarkExist(fields).then(result=>{
                 if(result){
@@ -902,5 +905,50 @@ router.post("/api/update_workout",
         }),
       ],
     updateWorkout
+);
+
+router.post(
+    "/api/bookmark_equipment",
+    [
+      helper_general.verifyToken,
+      body("id")
+      .notEmpty()
+      .withMessage("Equipment id is required"),
+      body("action")
+      .notEmpty()
+      .withMessage("Action is required")
+      .custom(async (value, {req})=>{
+        const allowedAction = ["add", "remove"];
+        if(allowedAction.indexOf(req.body.action.toLowerCase()) < 0){
+            throw new Error('Only add and remove actions are allowed.');
+        }
+        if(req.body.id !== 0 && req.body.action === 'add'){
+            var fields = {};
+            fields['source_id = ?'] = req.body.id;
+            fields['user_id = ?'] = req.user.id;
+            await helper_general.bookmarkExist(fields).then(result=>{
+                if(result){
+                    throw new Error('Already exist.');
+                }
+            });
+        }
+        return true;
+    }),
+    ],
+    bookmarkEquipment
+);
+router.post(
+    "/api/get_bookmark_equipments",
+    [
+      helper_general.verifyToken,
+    ],
+    getBookmarkEquipments
+);
+router.post(
+    "/api/get_bookmarks",
+    [
+      helper_general.verifyToken,
+    ],
+    getBookmarks
 );
 module.exports = router;

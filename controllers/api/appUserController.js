@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
+const async = require("async");
 const dbConnection = require("../../utils/dbConnection");
 const helper_email = require("../../helpers/email");
 const helper_general = require("../../helpers/general");
@@ -395,6 +396,76 @@ exports.editUserProfile = async (req, res, next) => {
     res.json(response);
   }
   catch (e) {
+    next(e);
+  }
+}
+exports.getBookmarks = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+
+  try {
+    if(error.length == 0){
+      let limit = req.body.length;
+      let offset = parseInt((++req.body.start*req.body.length)-req.body.length);;
+      let order = 'b.id';
+      let dir = 'desc';
+      var where = {};
+        where['b.user_id = ?'] = req.user.id;
+        if(req.body.title!==undefined){
+          //where['ex.title LIKE ?'] = "%" + req.body.title + "%";
+        }
+        var conditions = helper_general.buildConditionsString(where);
+        var sql = "SELECT b.id as bookmark_id,b.type,";
+        sql += "(CASE b.type WHEN 'equipment' THEN eq.id ELSE ex.id END) as id, (CASE b.type WHEN 'equipment' THEN eq.title ELSE ex.title END) as title, (CASE b.type WHEN 'equipment' THEN eq.description ELSE ex.description END) as description, (CASE b.type WHEN 'equipment' THEN eq.image ELSE ex.image END) as image";
+        sql += " FROM `bookmarks` as b"
+        sql += " LEFT JOIN `exercises` as ex ON (b.source_id = ex.id)";
+        sql += " LEFT JOIN `equipments` as eq ON (b.source_id = eq.id)";
+        sql += " WHERE "+conditions.where;
+        sql +=" ORDER BY "+order+" "+dir+" LIMIT "+limit+" OFFSET "+offset;
+        await dbConnection.execute(sql,conditions.values).then(async (row) => {
+          row = JSON.parse(JSON.stringify(row));
+          if(row[0].length > 0){
+            let tasks = [];
+            await row[0].forEach(async function(item,index){
+              var image_dir = '';
+              switch(item.type){
+                case 'equipment':{
+                  image_dir = 'equipment';
+                }break;
+                case 'exercise':{
+                  image_dir = 'exercise';
+                }break;
+                default:{
+
+                }
+              }
+              row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/'+item.image;
+              row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/thumb/'+item.image;
+            });
+            
+            response['status'] = '1';
+            response['data']['bookmarks'] = row[0];
+          }
+          else{
+            error.push("data does not exist");
+            response['data']['error'] = error;
+          }
+        }, (err) => {
+          error.push(err.message);
+          response['data']['error'] = error;
+        })
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    res.json(response);
+  } catch (e) {
     next(e);
   }
 }

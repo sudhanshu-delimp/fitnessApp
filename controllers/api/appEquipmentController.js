@@ -323,3 +323,118 @@ exports.getEquipmentRelatedExercises = async (req, res, next) => {
     next(e);
   }
 }
+
+exports.bookmarkEquipment = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+
+  try {
+    if(error.length == 0){
+      let action = req.body.action;
+      var where = {}, insert = {};
+      switch (action) {
+        case 'add':{
+          insert['type'] = 'equipment';
+          insert['source_id'] = req.body.id;
+          insert['user_id'] = req.user.id;
+          var conditions = helper_general.buildInsertConditionsString(insert);
+          var sql = "INSERT INTO `bookmarks`("+conditions.inserts+") VALUES("+conditions.fields+")";
+          await dbConnection.execute(sql,conditions.values).then((row) => {
+            response['status'] = '1';
+            response['data']['bookmark_id'] = row[0]['insertId'];
+            response['data']['message'] = "Bookmarked";
+          }, (err) => {
+            error.push(err.message);
+            response['data']['error'] = error;
+          })
+        } break;
+        case 'remove':{
+          where['id = ?'] = req.body.id;
+          where['user_id = ?'] = req.user.id;
+          where['type = ?'] = 'equipment';
+          var conditions = helper_general.buildDeleteConditionsString(where);
+          var sql = "DELETE FROM `bookmarks` WHERE "+conditions.where;
+          await dbConnection.execute(sql,conditions.values).then((row) => {
+            if(row[0].affectedRows > 0){
+              response['status'] = '1';
+              response['data']['message'] = "Unbookmarked";
+            }
+            else{
+              error.push("Bookmark does not exit.");
+              response['data']['error'] = error;
+            }
+          }, (err) => {
+            error.push(err.message);
+            response['data']['error'] = error;
+          })
+        } break;
+      }
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    res.json(response);
+  } catch (e) {
+    next(e);
+  }
+}
+
+exports.getBookmarkEquipments = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+
+  try {
+    if(error.length == 0){
+      let limit = req.body.length;
+      let offset = parseInt((++req.body.start*req.body.length)-req.body.length);;
+      let order = 'b.id';
+      let dir = 'desc';
+      var where = {};
+        where['b.user_id = ?'] = req.user.id;
+        if(req.body.title!==undefined){
+          where['e.title LIKE ?'] = "%" + req.body.title + "%";
+        }
+        var conditions = helper_general.buildConditionsString(where);
+        var sql = "SELECT b.id as bookmark_id,e.* FROM `bookmarks` as b";
+        sql += " LEFT JOIN `equipments` as e ON (b.source_id = e.id)";
+        sql += " WHERE "+conditions.where;
+        sql +=" ORDER BY "+order+" "+dir+" LIMIT "+limit+" OFFSET "+offset;
+        await dbConnection.execute(sql,conditions.values).then((row) => {
+          row = JSON.parse(JSON.stringify(row));
+          if(row[0].length > 0){
+            row[0].forEach(function(item,index){
+              row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/equipment/'+item.image;
+              row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/equipment/thumb/'+item.image;
+            });
+            response['status'] = '1';
+            response['data']['exercises'] = row[0];
+          }
+          else{
+            error.push("data does not exist");
+            response['data']['error'] = error;
+          }
+        }, (err) => {
+          error.push(err.message);
+          response['data']['error'] = error;
+        })
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    res.json(response);
+  } catch (e) {
+    next(e);
+  }
+}

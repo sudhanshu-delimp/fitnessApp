@@ -286,7 +286,8 @@ exports.bookmarkExercise = async (req, res, next) => {
       var where = {}, insert = {};
       switch (action) {
         case 'add':{
-          insert['exercise_id'] = req.body.id;
+          insert['type'] = 'exercise';
+          insert['source_id'] = req.body.id;
           insert['user_id'] = req.user.id;
           var conditions = helper_general.buildInsertConditionsString(insert);
           var sql = "INSERT INTO `bookmarks`("+conditions.inserts+") VALUES("+conditions.fields+")";
@@ -301,11 +302,19 @@ exports.bookmarkExercise = async (req, res, next) => {
         } break;
         case 'remove':{
           where['id = ?'] = req.body.id;
+          where['user_id = ?'] = req.user.id;
+          where['type = ?'] = 'exercise';
           var conditions = helper_general.buildDeleteConditionsString(where);
           var sql = "DELETE FROM `bookmarks` WHERE "+conditions.where;
           await dbConnection.execute(sql,conditions.values).then((row) => {
-            response['status'] = '1';
-            response['data']['message'] = "Unbookmarked";
+            if(row[0].affectedRows > 0){
+              response['status'] = '1';
+              response['data']['message'] = "Unbookmarked";
+            }
+            else{
+              error.push("Bookmark does not exit.");
+              response['data']['error'] = error;
+            }
           }, (err) => {
             error.push(err.message);
             response['data']['error'] = error;
@@ -345,7 +354,7 @@ exports.getBookmarkExercises = async (req, res, next) => {
         }
         var conditions = helper_general.buildConditionsString(where);
         var sql = "SELECT b.id as bookmark_id,e.* FROM `bookmarks` as b";
-        sql += " LEFT JOIN `exercises` as e ON (b.exercise_id = e.id)";
+        sql += " LEFT JOIN `exercises` as e ON (b.source_id = e.id)";
         sql += " WHERE "+conditions.where;
         sql +=" ORDER BY "+order+" "+dir+" LIMIT "+limit+" OFFSET "+offset;
         await dbConnection.execute(sql,conditions.values).then((row) => {

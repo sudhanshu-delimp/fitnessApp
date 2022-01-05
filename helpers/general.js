@@ -333,3 +333,21 @@ exports.createQrCode = async (string) => {
     });
   });
 }
+
+exports.getTableFieldValue = async (table,field,where_field,where_value) => {
+  return new Promise(async (resolve, reject)=>{
+    await dbConnection.execute("SELECT "+field+" FROM "+table+" WHERE "+where_field+"=?", [where_value]).then((row) => {
+      // console.log("+++++++++");
+      // console.log(row[0][0][field]);
+      // console.log(row[0].length);
+      if(row[0].length > 0){
+          resolve(row[0][0][field]);
+      }
+      else{
+        reject("data does not exist.");
+      }
+  }, (err) => {
+      reject(err);
+  })
+  })
+}
