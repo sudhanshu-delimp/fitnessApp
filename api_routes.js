@@ -160,12 +160,12 @@ router.post(
     "/api/edit_profile",
     [
         helper_general.verifyToken,
-        body("name", "The name must be of minimum 3 characters length")
+        body("name", "The first name must be of minimum 3 characters length")
             .notEmpty()
             .escape()
             .trim()
             .isLength({ min: 3 }),
-        body("last_name", "The name must be of minimum 2 characters length")
+        body("last_name", "The last name must be of minimum 2 characters length")
             .escape()
             .trim()
             .isLength({ min: 2 }),    
