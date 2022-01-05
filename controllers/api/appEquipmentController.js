@@ -83,7 +83,7 @@ exports.getEquipmentDetail = async (req, res, next) => {
   try {
     if(error.length == 0){
       var id = req.body.id;
-      await helper_equipment.getEquipmentDetail(id).then(row=>{
+      await helper_equipment.getEquipmentDetail(req).then(row=>{
         response['status'] = '1';
         response['data']['equipment'] = row;
         if(req.xhr === true){

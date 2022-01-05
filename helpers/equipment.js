@@ -39,14 +39,16 @@ exports.getEquipmentsCount = async (req, res, next) => {
   })
 }
 
-exports.getEquipmentDetail = async (id = '') => {
+exports.getEquipmentDetail = async (req) => {
   return new Promise((resolve, reject)=>{
     var where = {};
-    if(id!==''){
-      where['id = ?'] = id;
+    if(req.body.id!==''){
+      where['eq.id = ?'] = req.body.id;
     }
     var conditions = helper_general.buildConditionsString(where);
-    var sql = "SELECT * FROM `equipments`  WHERE "+conditions.where;
+    var sql = "SELECT eq.*,b.id as bookmark_id FROM `equipments` as eq";
+    sql += " LEFT JOIN `bookmarks` as b ON(eq.id = b.source_id AND b.user_id="+req.user.id+")";
+    sql += " WHERE "+conditions.where;
     dbConnection.execute(sql,conditions.values).then((row) => {
         row = JSON.parse(JSON.stringify(row));
         if(row[0].length > 0){
