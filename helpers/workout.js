@@ -294,3 +294,29 @@ exports.getWorkoutDetail = async (req) => {
     })
   });
 }
+
+exports.getWorkoutExerciseDetail = async (req) => {
+  return new Promise((resolve, reject)=>{
+    var where = {};
+    if(req.body.id!==''){
+      where['we.id = ?'] = req.body.id;
+    }
+    var conditions = helper_general.buildConditionsString(where);
+    var sql = "SELECT we.*,e.title,e.description,e.image FROM `workouts_exercises` as we";
+    sql += " LEFT JOIN `exercises` as e ON(we.exercise_id = e.id)";
+    sql += " WHERE "+conditions.where;
+    dbConnection.execute(sql,conditions.values).then(async(row) => {
+        row = JSON.parse(JSON.stringify(row));
+        if(row[0].length > 0){
+          row[0][0]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+row[0][0]['image'];
+          row[0][0]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/thumb/'+row[0][0]['image'];
+            resolve(row[0][0]);
+        }
+        else{
+          reject("Data does not exist.");
+        }
+    }, (err) => {
+        reject(err.message);
+    })
+  });
+}

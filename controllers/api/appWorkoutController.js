@@ -684,3 +684,85 @@ exports.addWorkout = async (req, res, next) => {
           next(e);
       }
     }
+
+    exports.getWorkoutExerciseDetail = async(req, res, next) => {
+      const errors = validationResult(req);
+      var error = [];
+      var response = {};
+  
+      response['status'] = '0';
+      response['data'] = {};
+      if (!errors.isEmpty()) {
+        error.push(errors.array()[0].msg);
+      }
+  
+      try {
+        if(error.length == 0){
+          var id = req.body.id;
+          await helper_workout.getWorkoutExerciseDetail(req).then(row=>{
+            response['status'] = '1';
+            response['data']['workout'] = row;
+            response['data']['message'] = "Data found";
+          },
+          err=>{
+            error.push(err);
+            response['data']['error'] = error;
+          });
+        }
+        else{
+          response['data']['error'] = error;
+        }
+        res.json(response);
+      } catch (e) {
+        next(e);
+      }
+    }
+
+    exports.updateWorkoutExerciseDetail = async(req, res, next) =>{
+      const errors = validationResult(req);
+      var error = [];
+      var response = {};
+      response['status'] = '0';
+      response['data'] = {};
+      if (!errors.isEmpty()) {
+        error.push(errors.array()[0].msg);
+      }
+  
+      try{
+        if(error.length == 0){
+          var where = {};
+          var update = {};
+          var actual_duration = parseInt(req.body.workout_exercise_actual_duration);
+          var spend_duration = parseInt(req.body.workout_exercise_spend_duration);
+          var left_duration = parseInt(req.body.workout_exercise_left_duration);
+
+          left_duration = (actual_duration<spend_duration)?0:(actual_duration-spend_duration);
+          spend_duration = (actual_duration<spend_duration)?actual_duration:spend_duration;
+
+          where['id = ?'] = req.body.workout_exercise_id;
+
+          update['reps = ?'] = req.body.workout_exercise_reps;
+          update['sets = ?'] = req.body.workout_exercise_sets;
+          update['actual_duration = ?'] = actual_duration;
+          update['left_duration = ?'] = left_duration;
+          update['spend_duration = ?'] = spend_duration;
+          
+          var conditions = helper_general.buildUpdateConditionsString(update, where);
+          var sql = "UPDATE `workouts_exercises` SET "+conditions.updates+" WHERE "+conditions.where;
+          await dbConnection.execute(sql,conditions.values).then((row)=>{
+            response['status'] = '1';
+            response['data']['message'] = "Success";
+          }, (err)=>{
+            error.push(err.message);
+            response['data']['error'] = error;
+          });
+        }
+        else{
+          response['data']['error'] = error;
+        }
+        res.json(response);
+      }
+      catch (e) {
+        next(e);
+      }
+    }

@@ -60,6 +60,8 @@ const {
     addBulkExerciseIntoWorkout,
     getUnselectedExercises,
     updateWorkout,
+    getWorkoutExerciseDetail,
+    updateWorkoutExerciseDetail,
 } = require("./controllers/api/appWorkoutController");
 
 router.post("/api/login",
@@ -338,11 +340,8 @@ router.post(
     deleteExercise
 );
 
-router.post(
-    "/api/get-exercise-listing",
-    [
-      helper_general.verifyToken
-    ],
+router.post("/api/get-exercise-listing",
+    [helper_general.verifyToken],
     getExerciseListing
 );
 
@@ -950,5 +949,41 @@ router.post(
       helper_general.verifyToken,
     ],
     getBookmarks
+);
+router.post(
+    "/api/get_workout_exercise_detail",
+    [
+        helper_general.verifyToken,
+        body("id", "Invalid id.")
+            .notEmpty()
+            .escape()
+            .trim(),
+    ],
+    getWorkoutExerciseDetail
+);
+router.post("/api/update_workout_exercise_detail",
+    [
+        helper_general.verifyToken,
+        body("workout_exercise_id")
+            .notEmpty()
+            .withMessage("Id is required")
+            .escape()
+            .trim(),
+        body("workout_exercise_reps", "Invalid reps")
+            .notEmpty()
+            .escape()
+            .isNumeric()
+            .trim(),
+        body("workout_exercise_sets", "Invalid sets")
+            .notEmpty()
+            .escape()
+            .isNumeric()
+            .trim(),
+        body("workout_exercise_actual_duration", "Invalid duration")
+            .notEmpty()
+            .escape()
+            .trim(),
+      ],
+      updateWorkoutExerciseDetail
 );
 module.exports = router;
