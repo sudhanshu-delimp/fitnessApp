@@ -86,7 +86,7 @@ exports.user_register = async (req, res, next) => {
       await dbConnection.execute(sql,conditions.values).then(async (row) => {
         helper_general.insertDeviceToken(row[0]['insertId'], req.body.device_type, req.body.device_token);
         var params = {'user_name':req.body.name,'email':req.body.email,'password':req.body.password};
-        await helper_email.sendEmail(req.body.email, params, 11).then((result)=>{
+        await helper_email.sendEmail(req.body.email, params, 3).then((result)=>{
           response['status'] = '1';
           response['data']['email'] = result.data;
           response['data']['user_id'] = row[0]['insertId'];
@@ -189,7 +189,7 @@ exports.user_forgot_password = async (req, res, next) => {
       var params = {
         'password':generatePass.password
       };
-      await helper_email.sendEmail(req.body.email, params, 10).then(result=>{
+      await helper_email.sendEmail(req.body.email, params, 4).then(result=>{
         response['status'] = '1';
         response['data']['email'] = result.data;
         response['data']['new_password'] = generatePass.password;
