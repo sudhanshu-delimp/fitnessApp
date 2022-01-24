@@ -93,6 +93,8 @@ exports.addWorkout = async (req, res, next) => {
         var insert = {};
         insert['workout_id'] = req.body.workout_id;
         insert['exercise_id'] = req.body.exercise_id;
+        insert['reps'] = req.body.reps;
+        insert['sets'] = req.body.sets;
         insert['actual_duration'] = req.body.exercise_duration;
         insert['left_duration'] = req.body.exercise_duration;
         insert['status'] = 'Pending';

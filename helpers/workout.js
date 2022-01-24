@@ -225,6 +225,8 @@ exports.addBulkExerciseIntoWorkout = async (req, workout_id) => {
             data: JSON.stringify({
                 workout_id: workout_id,
                 exercise_id: id,
+                reps: response.reps,
+                sets: response.sets,
                 exercise_duration:parseInt(response.duration*60)
             })
         };
