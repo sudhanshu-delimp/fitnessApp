@@ -252,7 +252,7 @@ exports.getEquipmentListing = async (req, res, next) => {
       let start = parseInt(req.body.start);
       let length = parseInt(req.body.length);
       req.body.start = parseInt((++start*length)-length);
-      req.body['order[0][column]'] = '1';
+      req.body['order[0][column]'] = '0';
       req.body['order[0][dir]'] = 'asc';
       await helper_equipment.getEquipments(req).then((row)=>{
         if(row.length > 0){
