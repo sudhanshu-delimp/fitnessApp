@@ -67,7 +67,7 @@ exports.getEquipments = async (req, res, next) => {
 
 exports.deleteEquipment = async (req, res, next) => {
   var id = req.body.id;
-  await helper_equipment.getEquipmentDetail(id).then(async (row)=>{
+  await helper_equipment.getEquipmentDetail(req).then(async (row)=>{
     res.render('equipment/equipment-delete', {
         equipment: row
     });
@@ -93,7 +93,7 @@ exports.deleteEquipmentVideo = async (req, res, next) => {
 
 exports.assignExercise = async (req, res, next) => {
   var id = req.body.id;
-  await helper_equipment.getEquipmentDetail(id).then(async (row)=>{
+  await helper_equipment.getEquipmentDetail(req).then(async (row)=>{
     res.render('equipment/assign-exercise', {
         equipment: row
     });
@@ -197,7 +197,7 @@ exports.processExercisesAssignment = async (req, res, next) => {
 
 exports.equipmentUploadVideo = async (req, res, next) => {
   var id = req.body.id;
-  await helper_equipment.getEquipmentDetail(id).then(async (row)=>{
+  await helper_equipment.getEquipmentDetail(req).then(async (row)=>{
     res.render('equipment/upload-video', {
         equipment: row
     });
