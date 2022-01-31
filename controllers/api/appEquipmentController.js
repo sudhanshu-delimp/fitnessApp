@@ -128,7 +128,7 @@ exports.updateEquipment = async (req, res, next) => {
   }
   if(req.files!==null){
     let old_image = '';
-    await helper_equipment.getEquipmentDetail(req.body.id).then(async (row)=>{
+    await helper_equipment.getEquipmentDetail(req).then(async (row)=>{
       old_image =  row.image;
       await helper_image.removeImage(`public/uploads/equipment/${old_image}`);
       await helper_image.removeImage(`public/uploads/equipment/thumb/${old_image}`);
@@ -197,7 +197,7 @@ exports.deleteEquipment = async (req, res, next) => {
     error.push(errors.array()[0].msg);
   }
   else{
-    await helper_equipment.getEquipmentDetail(req.body.id).then(async (row)=>{
+    await helper_equipment.getEquipmentDetail(req).then(async (row)=>{
       old_image =  row.image;
       await helper_image.removeImage(`public/uploads/equipment/${old_image}`);
       await helper_image.removeImage(`public/uploads/equipment/thumb/${old_image}`);
