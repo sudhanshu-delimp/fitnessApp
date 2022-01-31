@@ -45,7 +45,6 @@ exports.getEquipmentDetail = async (req) => {
     if(req.body.id!==''){
       where['eq.id = ?'] = req.body.id;
     }
-    
     var conditions = helper_general.buildConditionsString(where);
     var sql = "SELECT eq.*,b.id as bookmark_id FROM `equipments` as eq";
     sql += " LEFT JOIN `bookmarks` as b ON(eq.id = b.source_id AND b.user_id="+req.user.id+")";

@@ -68,6 +68,7 @@ exports.getEquipments = async (req, res, next) => {
 exports.deleteEquipment = async (req, res, next) => {
   var id = req.body.id;
   await helper_equipment.getEquipmentDetail(req).then(async (row)=>{
+    console.log(row);
     res.render('equipment/equipment-delete', {
         equipment: row
     });

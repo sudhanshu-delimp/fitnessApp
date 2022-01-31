@@ -169,7 +169,7 @@ router.post(
     "/exercise/get-exercises",
     getExercises
 );
-router.post('/exercise/delete-exercise', [ifNotLoggedin,helper_general.verifyToken,], deleteExercise);
+router.post('/exercise/delete-exercise', [ifNotLoggedin,helper_general.verifyToken], deleteExercise);
 
 router.get("/equipment/add", ifNotLoggedin, addEquipmentPage);
 router.get("/equipment/manage", ifNotLoggedin, equipmentListingPage);
@@ -177,8 +177,8 @@ router.post(
     "/equipment/get-equipments",
     getEquipments
 );
-router.post('/equipment/delete-equipment', ifNotLoggedin, deleteEquipment);
-router.post('/equipment/assign-exercise', ifNotLoggedin, assignExercise);
+router.post('/equipment/delete-equipment', [ifNotLoggedin,helper_general.verifyToken], deleteEquipment);
+router.post('/equipment/assign-exercise', [ifNotLoggedin,helper_general.verifyToken], assignExercise);
 router.post(
     "/equipment/get-exercises-for-assignment",
     getExercisesForAssignment
@@ -187,7 +187,7 @@ router.post(
     "/equipment/process-exercises-assignment",
     processExercisesAssignment
 );
-router.post('/equipment/upload-video', ifNotLoggedin, equipmentUploadVideo);
+router.post('/equipment/upload-video', [ifNotLoggedin,helper_general.verifyToken], equipmentUploadVideo);
 router.post(
     "/equipment/get-equipment-videos",
     getEquipmentVideos
