@@ -249,7 +249,7 @@ exports.registerPage = (req, res, next) => {
                     body: JSON.stringify({
                         to: [{ email: body._email }],
                         params: { 'password': randomstring },
-                        templateId: 10
+                        templateId: 4
                     })
                 };
 
