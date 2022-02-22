@@ -226,6 +226,7 @@ router.post(
     [
       helper_general.verifyToken,
       body("user_id", "Invalid user id.")
+      .isInt({ min:1})
       .notEmpty()
       .escape()
       .trim(),
@@ -281,6 +282,7 @@ router.post("/api/get-exercise-detail",
   helper_general.verifyToken,
   body("id", "Invalid exercise id.")
   .notEmpty()
+  .isInt({ min:1})
   .escape()
   .trim(),
 ],
@@ -334,6 +336,7 @@ router.post(
       helper_general.verifyToken,
       body("id", "Invalid id.")
       .notEmpty()
+      .isInt({ min:1})
       .escape()
       .trim(),
     ],
@@ -381,6 +384,7 @@ router.post("/api/get-equipment-detail",
   helper_general.verifyToken,
   body("id", "Invalid equipment id.")
   .notEmpty()
+  .isInt({ min:1})
   .escape()
   .trim(),
 ],
@@ -421,6 +425,7 @@ router.post(
       helper_general.verifyToken,
       body("id", "Invalid id.")
       .notEmpty()
+      .isInt({ min:1})
       .escape()
       .trim(),
     ],
@@ -441,6 +446,7 @@ router.post(
       helper_general.verifyToken,
       body("id", "Invalid id.")
       .notEmpty()
+      .isInt({ min:1})
       .escape()
       .trim(),
     ],
@@ -457,6 +463,7 @@ router.post(
           .trim(),
       body("source_id", "Invalid id.")
       .notEmpty()
+      .isInt({ min:1})
       .escape()
       .trim(),
       body("type", "Invalid type.")
@@ -501,6 +508,7 @@ router.post(
       helper_general.verifyToken,
       body("id", "Invalid id.")
       .notEmpty()
+      .isInt({ min:1})
       .escape()
       .trim(),
     ],
@@ -513,6 +521,7 @@ router.post(
       helper_general.verifyToken,
       body("id", "Invalid id.")
       .notEmpty()
+      .isInt({ min:1})
       .escape()
       .trim(),
       body("thumb_image").custom((value, { req })=>{
@@ -549,6 +558,7 @@ router.post(
       helper_general.verifyToken,
       body("id", "Invalid id.")
       .notEmpty()
+      .isInt({ min:1})
       .escape()
       .trim(),
     ],
@@ -561,6 +571,7 @@ router.post(
       helper_general.verifyToken,
       body("id", "Invalid id.")
       .notEmpty()
+      .isInt({ min:1})
       .escape()
       .trim(),
     ],
@@ -573,6 +584,7 @@ router.post(
       helper_general.verifyToken,
       body("id", "Invalid id.")
       .notEmpty()
+      .isInt({ min:1})
       .escape()
       .trim(),
     ],
@@ -638,9 +650,11 @@ router.post("/api/add_exercise_into_workout",
         helper_general.verifyToken,
         body("workout_id")
             .notEmpty()
+            .isInt({ min:1})
             .withMessage("Workout id is required"),
         body("exercise_id")
             .notEmpty()
+            .isInt({ min:1})
             .withMessage("Exercise id is required")
             .custom(async (value, {req})=>{
                 if(req.body.exercise_id !== 0 && req.body.workout_id !== 0){
@@ -664,6 +678,7 @@ router.post("/api/remove_exercise_from_workout",
         helper_general.verifyToken,
         body("id")
             .notEmpty()
+            .isInt({ min:1})
             .withMessage("Id is required"),
     ],
     removeExerciseFromWorkout
@@ -693,6 +708,7 @@ router.post(
       helper_general.verifyToken,
       body("id")
       .notEmpty()
+      .isInt({ min:1})
       .withMessage("Id is required"),
       body("action")
       .notEmpty()
@@ -745,6 +761,7 @@ router.post(
       helper_general.verifyToken,
       body("id")
       .notEmpty()
+      .isInt({ min:1})
       .withMessage("Id is required"),
     ],
     getWorkoutExerciseList
@@ -780,6 +797,7 @@ router.post(
         helper_general.verifyToken,
         body("id", "Invalid exercise id.")
             .notEmpty()
+            .isInt({ min:1})
             .escape()
             .trim(),
     ],
@@ -792,6 +810,7 @@ router.post(
         helper_general.verifyToken,
         body("id", "Invalid workout id.")
             .notEmpty()
+            .isInt({ min:1})
             .escape()
             .trim(),
     ],
@@ -826,6 +845,7 @@ router.post(
       helper_general.verifyToken,
       body("id", "Invalid id.")
       .notEmpty()
+      .isInt({ min:1})
       .escape()
       .trim(),
     ],
@@ -837,6 +857,7 @@ router.post("/api/add_bulk_exercise_into_workout",
         helper_general.verifyToken,
         body("workout_id")
             .notEmpty()
+            .isInt({ min:1})
             .withMessage("Workout id is required."),
         body("exercises")
             .notEmpty()
@@ -857,6 +878,7 @@ router.post("/api/update_workout",
       helper_general.verifyToken,
       body("id")
           .notEmpty()
+          .isInt({ min:1})
           .withMessage("Workout Id is required")
           .escape()
           .trim(),
@@ -912,6 +934,7 @@ router.post(
       helper_general.verifyToken,
       body("id")
       .notEmpty()
+      .isInt({ min:1})
       .withMessage("Equipment id is required"),
       body("action")
       .notEmpty()
@@ -956,6 +979,7 @@ router.post(
         helper_general.verifyToken,
         body("id", "Invalid id.")
             .notEmpty()
+            .isInt({ min:1})
             .escape()
             .trim(),
     ],
@@ -966,6 +990,7 @@ router.post("/api/update_workout_exercise_detail",
         helper_general.verifyToken,
         body("workout_exercise_id")
             .notEmpty()
+            .isInt({ min:1})
             .withMessage("Id is required")
             .escape()
             .trim(),
