@@ -48,7 +48,7 @@ exerciseRoutes.post("/add_exercise",
       appExerciseController.add_exercise
 );
 
-exerciseRoutes.post("/api/get-exercise-detail",
+exerciseRoutes.post("/get-exercise-detail",
     [
     helper_general.verifyToken,
     body("id", "Invalid exercise id.")

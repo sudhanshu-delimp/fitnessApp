@@ -7,8 +7,8 @@ const workoutRoutes = require('./workoutRoutes');
 const videoRoutes = require('./videoRoutes');
 
 apiRouter.use('/', userRoutes);
-apiRouter.use('/',exerciseRoutes);
-apiRouter.use('/',equipmentRoutes);
-apiRouter.use('/',workoutRoutes);
-apiRouter.use('/',videoRoutes);
+apiRouter.use('/', exerciseRoutes);
+apiRouter.use('/', equipmentRoutes);
+apiRouter.use('/', videoRoutes);
+apiRouter.use('/', workoutRoutes);
 module.exports = apiRouter;
