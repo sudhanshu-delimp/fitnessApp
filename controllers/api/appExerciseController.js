@@ -36,6 +36,7 @@ exports.add_exercise = async (req, res, next) => {
       insert['title'] = req.body.title;
       insert['reps'] = req.body.reps;
       insert['sets'] = req.body.sets;
+      insert['weight'] = req.body.weight;
       insert['duration'] = req.body.duration;
       insert['description'] = req.body.description;
       insert['image'] = image_name;
@@ -152,6 +153,7 @@ exports.updateExercise = async (req, res, next) => {
       update['title = ?'] = req.body.title;
       update['reps = ?'] = req.body.reps;
       update['sets = ?'] = req.body.sets;
+      update['weight = ?'] = req.body.weight;
       update['duration = ?'] = req.body.duration;
       update['description = ?'] = req.body.description;
 

@@ -210,25 +210,28 @@ exports.addBulkExerciseIntoWorkout = async (req, workout_id) => {
   let tasks = [];
   let exercises = req.body.exercises.split(",");
   let accessToken = req.body.token || req.query.token || req.headers["x-access-token"];
+  let properties = (req.body.properties)?req.body.properties:[];
   exercises.forEach(async(id, index)=>{
     tasks.push(function(cb){
       req.body.id = id;
-      helper_exercise.getExerciseDetail(req).then(async(response)=>{
+      let obj_exe = 'property_'+id;
+      if(properties[obj_exe]){
         const options = {
-            method: 'post',
-            url:process.env.BASE_URL+'/api/add_exercise_into_workout',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                'x-access-token': accessToken
-            },
-            data: JSON.stringify({
-                workout_id: workout_id,
-                exercise_id: id,
-                reps: response.reps,
-                sets: response.sets,
-                exercise_duration:parseInt(response.duration*60)
-            })
+          method: 'post',
+          url:process.env.BASE_URL+'/api/add_exercise_into_workout',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'x-access-token': accessToken
+          },
+          data: JSON.stringify({
+            workout_id: workout_id,
+            exercise_id: id,
+            reps: properties[obj_exe].reps,
+            sets: properties[obj_exe].sets,
+            weight: properties[obj_exe].weight,
+            exercise_duration:parseInt(properties[obj_exe].exercise_duration*60)
+          })
         };
         axios(options).then(response => {
           cb(null, response.data )
@@ -236,9 +239,36 @@ exports.addBulkExerciseIntoWorkout = async (req, workout_id) => {
         .catch((err)=>{
           cb(null,err)
         });
-      },(err)=>{
-        //handel error
-      });
+      }
+      else{
+        helper_exercise.getExerciseDetail(req).then(async(response)=>{
+          const options = {
+              method: 'post',
+              url:process.env.BASE_URL+'/api/add_exercise_into_workout',
+              headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                  'x-access-token': accessToken
+              },
+              data: JSON.stringify({
+                  workout_id: workout_id,
+                  exercise_id: id,
+                  reps: response.reps,
+                  sets: response.sets,
+                  weight: response.weight,
+                  exercise_duration:parseInt(response.duration*60)
+              })
+          };
+          axios(options).then(response => {
+            cb(null, response.data )
+          })
+          .catch((err)=>{
+            cb(null,err)
+          });
+        },(err)=>{
+  
+        });
+      }
     });
   });
   async.series(tasks,(err,result)=>{

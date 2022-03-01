@@ -23,15 +23,19 @@
             <input class="form-control" name="title" value="<%= exercise.title %>" type="text" id="title" placeholder="Enter Title">
             <input type="hidden" name="id" value="<%= exercise.id %>">
             </div>
-            <div class="form-group col-sm-4">
+            <div class="form-group col-sm-3">
             <label for="reps">Reps<sup><i class="fa fa-star text-red" aria-hidden="true"></i></sup></label>
             <input class="form-control" name="reps" value="<%= exercise.reps %>" type="text" id="reps" placeholder="Enter Reps">
             </div>
-            <div class="form-group col-sm-4">
+            <div class="form-group col-sm-3">
             <label for="sets">Sets<sup><i class="fa fa-star text-red" aria-hidden="true"></i></sup></label>
             <input class="form-control" name="sets" value="<%= exercise.sets %>" type="text" id="sets" placeholder="Enter Sets">
             </div>
-            <div class="form-group col-sm-4">
+            <div class="form-group col-sm-3">
+              <label for="sets">Weight<sup><i class="fa fa-star text-red" aria-hidden="true"></i></sup></label>
+              <input class="form-control" name="weight" value="<%= exercise.weight %>" type="text" id="weight" placeholder="Enter Weight">
+              </div>
+            <div class="form-group col-sm-3">
             <label for="duration">Duration<sup><i class="fa fa-star text-red" aria-hidden="true"></i></sup></label>
             <input class="form-control" name="duration" value="<%= exercise.duration %>" type="number" id="duration" placeholder="Enter Duration in Minutes">
             </div>
