@@ -28,19 +28,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload()); // configure fileupload
-const routes = require('./routes');
-const api_routes = require('./api_routes');
+//const routes = require('./routes');
+//const api_routes = require('./api_routes');
+const apiRouter = require('./routes/api/index');
 app.use ((req, res, next) => {
-    // res.locals.host = req.get('host');
-    // res.locals.protocol = req.protocol;
     res.locals.url = req.originalUrl;
     var current_url = req.originalUrl.split("/");
     res.locals.main_module = (current_url[1])?current_url[1]:'';
     res.locals.child_module = (current_url[2])?current_url[2]:'';
     next();
 });
-app.use(routes);
-app.use(api_routes);
+//app.use(routes);
+app.use('/api',apiRouter);
 
 
 
