@@ -746,6 +746,7 @@ exports.addWorkout = async (req, res, next) => {
 
           update['reps = ?'] = req.body.workout_exercise_reps;
           update['sets = ?'] = req.body.workout_exercise_sets;
+          update['weight = ?'] = req.body.workout_exercise_weight;
           update['actual_duration = ?'] = actual_duration;
           update['left_duration = ?'] = left_duration;
           update['spend_duration = ?'] = spend_duration;
