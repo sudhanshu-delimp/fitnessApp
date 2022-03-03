@@ -386,3 +386,34 @@ exports.getBookmarkExercises = async (req, res, next) => {
     next(e);
   }
 }
+
+exports.getExercisesCount = async (req, res, next) => {
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  try{
+    var where = {};
+    where['1 = ?'] = 1;
+    var conditions = helper_general.buildConditionsString(where);
+    var sql = "SELECT count(e.id) as count";
+    sql += " FROM `exercises` as e";
+    sql += " WHERE "+conditions.where;
+    await dbConnection.execute(sql,conditions.values).then((row) => {
+      if(row[0].length >= 0){
+        response['status'] = '1';
+        response['data']['count_is'] = row[0][0].count;
+      }
+      else{
+        error.push("data does not exist");
+        response['data']['error'] = error;
+      }
+    }, (err) => {
+      error.push(err.message);
+      response['data']['error'] = error;
+    })
+    res.json(response);
+  } catch (e) {
+    next(e);
+  }
+}

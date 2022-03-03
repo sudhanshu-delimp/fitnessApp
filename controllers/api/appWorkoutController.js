@@ -53,6 +53,7 @@ exports.addWorkout = async (req, res, next) => {
         insert['schedule_date'] = req.body.schedule_date;
         insert['description'] = req.body.description;
         insert['image'] = image_name;
+        insert['warmup_time'] = req.body.warmup_time; 
         var conditions = helper_general.buildInsertConditionsString(insert);
         var sql = "INSERT INTO `workouts`("+conditions.inserts+") VALUES("+conditions.fields+")";
         await dbConnection.execute(sql,conditions.values).then(async (row) => {
@@ -655,11 +656,13 @@ exports.addWorkout = async (req, res, next) => {
         if(error.length == 0){
           var where = {};
           var update = {};
-          where['id = ?'] = req.body.id;
+          var workout_id = req.body.id;
+          where['id = ?'] = workout_id;
           update['title = ?'] = req.body.title;
           update['schedule_time = ?'] = req.body.schedule_time;
           update['schedule_date = ?'] = req.body.schedule_date;
           update['description = ?'] = req.body.description;
+          update['warmup_time = ?'] = req.body.warmup_time;
           if(image_name!=''){
               update['image = ?'] = image_name;
           }
@@ -668,10 +671,10 @@ exports.addWorkout = async (req, res, next) => {
           await dbConnection.execute(sql,conditions.values).then(async (row) => {
             //ResultSetHeader
             if(req.body.exercises !== ''){
-               helper_workout.addBulkExerciseIntoWorkout(req, req.body.id);
+               helper_workout.addBulkExerciseIntoWorkout(req, workout_id);
             }
             response['status'] = '1';
-            response['data']['workout_id'] = req.body.id;
+            response['data']['workout_id'] = workout_id;
             response['data']['message'] = "Workout has been updated successfully.";
           }, (err) => {
             error.push(err.message);

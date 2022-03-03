@@ -13,4 +13,5 @@ userRoutes.post("/update_user",validation.update_user,validateRequest,appUserCon
 userRoutes.post("/delete_user",validation.delete_user,validateRequest,appUserController.deleteUser);
 userRoutes.post("/edit_profile",validation.edit_profile,validateRequest,appUserController.editUserProfile);
 userRoutes.post("/get_bookmarks",validation.get_bookmarks,validateRequest,appUserController.getBookmarks);
+userRoutes.post("/get_users_count",validation.get_users_count,validateRequest,appUserController.getUsersCount);
 module.exports = userRoutes;

@@ -129,3 +129,7 @@ exports.bookmark_exercise = [
 exports.get_bookmark_exercises = [
     helper_general.verifyToken,
 ];
+
+exports.get_exercises_count = [
+    helper_general.verifyToken,
+];

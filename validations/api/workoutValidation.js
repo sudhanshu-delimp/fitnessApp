@@ -8,6 +8,12 @@ exports.add_workout = [
         .withMessage("Title is required")
         .escape()
         .trim(),
+    body("warmup_time")
+        .notEmpty()
+        .isInt({min:1})
+        .withMessage("Warmup time is required")
+        .escape()
+        .trim(),    
     body("schedule_time", "Invalid schedule time")
         .notEmpty()
         .escape()
@@ -202,6 +208,12 @@ exports.update_workout = [
         .withMessage("Workout Id is required")
         .escape()
         .trim(),
+    body("warmup_time")
+        .notEmpty()
+        .isInt({min:1})
+        .withMessage("Warmup time is required")
+        .escape()
+        .trim(), 
     body("title")
         .notEmpty()
         .withMessage("Title is required")

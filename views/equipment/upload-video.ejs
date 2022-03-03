@@ -139,7 +139,8 @@
       var formID = form.attr('id');
       if(json.status == 1){
         successing_Attr(formID,json.data.message,1);
-        setTimeout(function(){ exercise_table.draw(false); }, 3000);
+        //setTimeout(function(){ exercise_table.draw(false); }, 3000);
+        exercise_table.draw(false);
       }
       else{
         error_Attr(formID,json.data.error);

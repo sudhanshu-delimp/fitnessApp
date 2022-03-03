@@ -2,9 +2,8 @@ const dbConnection = require("../utils/dbConnection");
 const axios = require('axios');
 const helper_general = require("./general");
 const AWS = require('aws-sdk');
-const async = require("async");
 
-exports.uploadFile_old =  async (file,destination_path) => {
+exports.uploadFile =  async (file,destination_path) => {
   return new Promise((resolve, reject)=>{
     try {
       const s3 = new AWS.S3({
@@ -28,50 +27,6 @@ exports.uploadFile_old =  async (file,destination_path) => {
           }
           resolve(data.Location);
       });
-    } catch(err) {
-      console.error(err);
-      reject(err);
-    }
-  });
-}
-
-exports.uploadFile =  async (file,destination_path) => {
-  return new Promise((resolve, reject)=>{
-    try {
-      let tasks = [];
-      const s3 = new AWS.S3({
-        accessKeyId: process.env.ACCESS_KEY_ID,
-        secretAccessKey: process.env.SECRET_ACCESS_KEY
-      });
-
-      //const fileContent = fs.readFileSync(original_path);
-      const fileContent  = Buffer.from(file, 'binary');
-      const params = {
-          Bucket: process.env.BUCKET_NAME,
-          Key: destination_path, // File name you want to save as in S3
-          Body: fileContent
-      };
-
-      // Uploading files to the bucket
-      tasks.push(function(cb){
-        s3.upload(params, function(err, data) {
-          if (err) {
-            console.error(err);
-            reject(err);
-            cb(null,err)
-          }
-          resolve(data.Location);
-          cb(null, data.Location )
-        });
-      })
-
-      async.series(tasks,(err,result)=>{
-        if(err){
-          reject(err)
-        }else{
-          resolve(result);
-        }
-      })
     } catch(err) {
       console.error(err);
       reject(err);

@@ -372,14 +372,10 @@ exports.editUserProfile = async (req, res, next) => {
   }
 }
 exports.getBookmarks = async (req, res, next) => {
-  const errors = validationResult(req);
   var error = [];
   var response = {};
   response['status'] = '0';
   response['data'] = {};
-  if (!errors.isEmpty()) {
-    error.push(errors.array()[0].msg);
-  }
 
   try {
     if(error.length == 0){
@@ -436,6 +432,37 @@ exports.getBookmarks = async (req, res, next) => {
     else{
       response['data']['error'] = error;
     }
+    res.json(response);
+  } catch (e) {
+    next(e);
+  }
+}
+
+exports.getUsersCount = async (req, res, next) => {
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  try{
+    var where = {};
+    where['role = ?'] = req.body.type;
+    var conditions = helper_general.buildConditionsString(where);
+    var sql = "SELECT count(u.id) as count";
+    sql += " FROM `users` as u";
+    sql += " WHERE "+conditions.where;
+    await dbConnection.execute(sql,conditions.values).then((row) => {
+      if(row[0].length >= 0){
+        response['status'] = '1';
+        response['data']['count_is'] = row[0][0].count;
+      }
+      else{
+        error.push("data does not exist");
+        response['data']['error'] = error;
+      }
+    }, (err) => {
+      error.push(err.message);
+      response['data']['error'] = error;
+    })
     res.json(response);
   } catch (e) {
     next(e);

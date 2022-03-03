@@ -152,3 +152,11 @@ exports.edit_profile = [
 exports.get_bookmarks = [
     helper_general.verifyToken
 ];
+
+exports.get_users_count = [
+    helper_general.verifyToken,
+    body("type", "User Type is required")
+        .notEmpty()
+        .escape()
+        .trim()
+];

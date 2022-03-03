@@ -11,4 +11,5 @@ exerciseRoutes.post("/delete_exercise",validation.delete_exercise,validateReques
 exerciseRoutes.post("/get-exercise-listing",validation.get_exercise_listing,validateRequest,appExerciseController.getExerciseListing);
 exerciseRoutes.post("/bookmark_exercise",validation.bookmark_exercise,validateRequest,appExerciseController.bookmarkExercise);
 exerciseRoutes.post("/get_bookmark_exercises",validation.get_bookmark_exercises,validateRequest,appExerciseController.getBookmarkExercises);
+exerciseRoutes.post("/get_exercises_count",validation.get_exercises_count,validateRequest,appExerciseController.getExercisesCount);
 module.exports = exerciseRoutes;
