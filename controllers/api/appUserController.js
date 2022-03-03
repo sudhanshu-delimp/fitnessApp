@@ -8,14 +8,10 @@ const helper_general = require("../../helpers/general");
 const helper_image = require("../../helpers/image");
 
 exports.getOtherUserDetail = async (req, res, next) => {
-  const errors = validationResult(req);
   var error = [];
   var response = {};
   response['status'] = '0';
   response['data'] = {};
-  if (!errors.isEmpty()) {
-    error.push(errors.array()[0].msg);
-  }
   try {
     if(error.length == 0){
       var user_id = req.body.user_id;
@@ -53,19 +49,13 @@ exports.getOtherUserDetail = async (req, res, next) => {
 }
 
 exports.user_register = async (req, res, next) => {
-  const errors = validationResult(req);
   var error = [];
   var response = {};
   response['status'] = '0';
   response['data'] = {};
-  if (!errors.isEmpty()) {
-    error.push(errors.array()[0].msg);
-  }
-  else{
-    const [row] = await dbConnection.execute('SELECT * FROM `users` WHERE `email`=?', [req.body.email]);
-    if (row.length >= 1) {
-        error.push('This email already in use.');
-    }
+  const [row] = await dbConnection.execute('SELECT * FROM `users` WHERE `email`=?', [req.body.email]);
+  if (row.length >= 1) {
+      error.push('This email already in use.');
   }
   try {
     if(error.length == 0){
@@ -110,17 +100,12 @@ exports.user_register = async (req, res, next) => {
 }
 
 exports.user_login = async (req, res, next) => {
-    const errors = validationResult(req);
     var error = [];
     var response = {};
     var account;
     response['status'] = '0';
     response['data'] = {};
-    if (!errors.isEmpty()) {
-      error.push(errors.array()[0].msg);
-    }
-    else{
-      var fields = {};
+    var fields = {};
       fields['email = ?'] = req.body.email;
       await helper_general.emailExist(fields).then(result=>{
         if(!result){
@@ -139,7 +124,6 @@ exports.user_login = async (req, res, next) => {
       }, err => {
         error.push(err);
       });
-    }
     try {
       if(error.length == 0){
         //const [row] = await dbConnection.execute('SELECT id,name,phone,email FROM `users` WHERE `email`=?', [req.body.email]);
@@ -162,23 +146,17 @@ exports.user_login = async (req, res, next) => {
 }
 
 exports.user_forgot_password = async (req, res, next) => {
-  const errors = validationResult(req);
   var error = [];
   var response = {};
   response['status'] = '0';
   response['data'] = {};
-  if (!errors.isEmpty()) {
-    error.push(errors.array()[0].msg);
-  }
-  else{
-    var fields = {};
+  var fields = {};
     fields['email = ?'] = req.body.email;
     await helper_general.emailExist(fields).then(result=>{
       if(!result){
         error.push('This email does not exist in the system.');
       }
     });
-  }
   try {
     if(error.length == 0){
       var generatePass = await helper_general.generatePassword();
@@ -213,16 +191,11 @@ exports.user_detail = (req, res) => {
 }
 
 exports.updateUser = async (req, res, next) => {
-  const errors = validationResult(req);
   var error = [];
   var response = {};
   response['status'] = '0';
   response['data'] = {};
-  if (!errors.isEmpty()) {
-    error.push(errors.array()[0].msg);
-  }
-  else{
-    var fields = {};
+  var fields = {};
     fields['email = ?'] = req.body.email;
     fields['id != ?'] = req.body.user_id;
     await helper_general.emailExist(fields).then(result=>{
@@ -230,7 +203,6 @@ exports.updateUser = async (req, res, next) => {
         error.push('This email already in use.');
       }
     });
-  }
   try {
     if(error.length == 0){
       var where = {};
