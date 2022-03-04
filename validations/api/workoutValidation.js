@@ -291,3 +291,6 @@ exports.update_workout_exercise_detail = [
         .trim(),
 ];
 
+exports.get_workouts_count = [
+    helper_general.verifyToken,
+];

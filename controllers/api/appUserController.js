@@ -445,7 +445,12 @@ exports.getUsersCount = async (req, res, next) => {
   response['data'] = {};
   try{
     var where = {};
-    where['role = ?'] = req.body.type;
+    let filters = req.body;
+    filters = JSON.stringify(filters);
+    filters = JSON.parse(filters);
+    for(var key in filters) {
+      where['u.'+key+' = ?'] = filters[key];
+    }
     var conditions = helper_general.buildConditionsString(where);
     var sql = "SELECT count(u.id) as count";
     sql += " FROM `users` as u";

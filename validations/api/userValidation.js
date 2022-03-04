@@ -155,8 +155,4 @@ exports.get_bookmarks = [
 
 exports.get_users_count = [
     helper_general.verifyToken,
-    body("type", "User Type is required")
-        .notEmpty()
-        .escape()
-        .trim()
 ];

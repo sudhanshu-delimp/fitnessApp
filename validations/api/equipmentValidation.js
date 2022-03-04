@@ -113,3 +113,7 @@ exports.bookmark_equipment = [
 exports.get_bookmark_equipments = [
     helper_general.verifyToken,
 ];
+
+exports.get_equipments_count = [
+    helper_general.verifyToken,
+];

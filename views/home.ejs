@@ -13,56 +13,52 @@
     <div class="row">
       <div class="col-lg-3 col-xs-6">
         <!-- small box -->
-        <div class="small-box bg-aqua">
+        <div class="small-box bg-aqua sbs_count">
           <div class="inner">
-            <h3>150</h3>
-
+            <h3 id="get_users_count" filter="role:app_user">0</h3>
             <p>Users</p>
           </div>
           <div class="icon">
             <i class="fa fa-users"></i>
           </div>
-          <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          <a href="../users/manage" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
       </div>
       <!-- ./col -->
       <div class="col-lg-3 col-xs-6">
         <!-- small box -->
-        <div class="small-box bg-green">
+        <div class="small-box bg-green sbs_count">
           <div class="inner">
-            <h3>53<sup style="font-size: 20px">%</sup></h3>
-
+            <h3 id="get_exercises_count" filter="">0</h3>
             <p>Exercises</p>
           </div>
           <div class="icon">
             <i class="fa fa-grav"></i>
           </div>
-          <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          <a href="../exercise/manage" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
       </div>
       <!-- ./col -->
       <div class="col-lg-3 col-xs-6">
         <!-- small box -->
-        <div class="small-box bg-yellow">
+        <div class="small-box bg-yellow sbs_count">
           <div class="inner">
-            <h3>44</h3>
-
-            <p>Equipment</p>
+            <h3 id="get_equipments_count" filter="">0</h3>
+            <p>Equipments</p>
           </div>
           <div class="icon">
             <i class="fa fa-life-ring"></i>
           </div>
-          <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+          <a href="../equipment/manage" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
       </div>
       <!-- ./col -->
       <div class="col-lg-3 col-xs-6">
         <!-- small box -->
-        <div class="small-box bg-red">
+        <div class="small-box bg-red sbs_count">
           <div class="inner">
-            <h3>65</h3>
-
-            <p>Unique Visitors</p>
+            <h3 id="get_workouts_count" filter="">0</h3>
+            <p>Workouts</p>
           </div>
           <div class="icon">
             <i class="ion ion-pie-graph"></i>
@@ -75,5 +71,39 @@
   </section>
 </div>
 <%- include('partials/footer') %>
+<script>
+  var get_sbs_count = function(element_id,data){
+      $.ajax({
+        type: 'POST',
+        url: 'api/'+element_id,
+        data: data,
+        beforeSend: function(){
+          $("#"+element_id).html('<i class="fa fa-cog fa-spin fa-1x fa-fw"></i>');
+        },
+        success: function(response) {
+          if(response.status === '1'){
+            $("#"+element_id).html(response.data.count_is);
+          }
+        }
+        });
+    }
+
+    $(".sbs_count h3").each(function(index,obj){
+    let element = $(obj);
+    let id = element.attr("id");
+    let data = {};
+    let filters = element.attr("filter");
+    if(filters!==""){
+      filters = filters.split("|");
+      if(filters.length > 0){
+        $.each(filters, function(index,value){
+          let item = value.split(":");
+          data[item[0]] = item[1];
+        });
+      }
+    }
+    get_sbs_count(id,data);
+  });
+</script>
 </body>
 </html>

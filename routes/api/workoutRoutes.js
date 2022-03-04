@@ -22,4 +22,5 @@ workoutRoutes.post("/get_unselected_exercises",validation.get_unselected_exercis
 workoutRoutes.post("/update_workout",validation.update_workout,validateRequest,appWorkoutController.updateWorkout);
 workoutRoutes.post("/get_workout_exercise_detail",validation.get_workout_exercise_detail,validateRequest,appWorkoutController.getWorkoutExerciseDetail);
 workoutRoutes.post("/update_workout_exercise_detail",validation.update_workout_exercise_detail,validateRequest,appWorkoutController.updateWorkoutExerciseDetail);
+workoutRoutes.post("/get_workouts_count",validation.get_workouts_count,validateRequest,appWorkoutController.getWorkoutsCount);
 module.exports = workoutRoutes;
