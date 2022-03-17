@@ -22,6 +22,10 @@ exports.register = [
         .escape()
         .trim()
         .isLength({ min: 2 }),
+    body("gender", "Invalid email gender.")
+        .notEmpty()
+        .escape()
+        .trim(),   
     body("email", "Invalid email address.")
         .notEmpty()
         .escape()

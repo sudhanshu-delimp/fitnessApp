@@ -64,6 +64,7 @@ exports.user_register = async (req, res, next) => {
       insert['role'] = 'app_user';
       insert['name'] = req.body.name;
       insert['last_name'] = req.body.last_name;
+      insert['gender'] = req.body.gender;
       insert['email'] = req.body.email;
       if(req.body.iso2){
         insert['iso2'] = req.body.iso2;
@@ -127,7 +128,7 @@ exports.user_login = async (req, res, next) => {
     try {
       if(error.length == 0){
         //const [row] = await dbConnection.execute('SELECT id,name,phone,email FROM `users` WHERE `email`=?', [req.body.email]);
-        var token = jwt.sign({ id: account.id,email: account.email,phone: account.phone}, process.env.JWT_SECRET_KEY, {
+        var token = jwt.sign({ id: account.id,email: account.email,phone: account.phone,gender: account.gender}, process.env.JWT_SECRET_KEY, {
           expiresIn: 86400 // 24 hours
         });
         helper_general.updateDeviceToken(account.id, req.body.device_type, req.body.device_token);
@@ -340,6 +341,7 @@ exports.editUserProfile = async (req, res, next) => {
       update['name = ?'] = req.body.name;
       update['last_name = ?'] = req.body.last_name;
       update['email = ?'] = req.body.email;
+      update['gender = ?'] = req.body.gender;
       if(req.body.iso2){
         update['iso2 = ?'] = req.body.iso2;
         update['dialCode = ?'] = req.body.dialCode;
@@ -355,7 +357,11 @@ exports.editUserProfile = async (req, res, next) => {
       var sql = "UPDATE `users` SET "+conditions.updates+" WHERE "+conditions.where;
       await dbConnection.execute(sql,conditions.values).then((row) => {
         //ResultSetHeader
+        var token = jwt.sign({ id: req.user.id,email: req.body.email,phone: req.body.phone,gender: req.body.gender}, process.env.JWT_SECRET_KEY, {
+          expiresIn: 86400 // 24 hours
+        });
         response['status'] = '1';
+        response['data']['accessToken'] = token;
         response['data']['message'] = "Updated successfully.";
       }, (err) => {
         error.push(err.message);
