@@ -38,7 +38,7 @@ exports.getExercises = async (req, res, next) => {
       var nestedData = {};
       nestedData['sn'] = helper_general.getSerialNumber(req.body.start, index);
       nestedData['title'] = exercise.title;
-      nestedData['image'] = '<img src="/uploads/exercise/thumb/'+exercise.image+'" class="img-circle" alt="">';
+      nestedData['image'] = '<img src="/uploads/exercise/male/thumb/'+exercise.image+'" class="img-circle" alt=""><img src="/uploads/exercise/female/thumb/'+exercise.female_image+'" class="img-circle" alt="">';
       nestedData['options'] = '<div class="btn-group">';
       nestedData['options'] += '<button class="btn btn-secondary btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Action</span><span class="caret"></span></button>';
       nestedData['options'] += '<ul class="dropdown-menu">';

@@ -18,16 +18,28 @@ exports.add_exercise = async (req, res, next) => {
     error.push(errors.array()[0].msg);
   }
   else{
+    /*male */
     let uploadedFile = req.files.image;
     let fileExtension = uploadedFile.mimetype.split('/')[1];
-    let msg = req.body.title;
-    image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
-    await uploadedFile.mv(`public/uploads/exercise/${image_name}`, (err ) => {
+    image_name = Date.now()+'-male-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
+    await uploadedFile.mv(`public/uploads/exercise/male/${image_name}`, (err ) => {
       if (err) {
         return res.status(500).send(err);
         error.push(err);
       }
-      helper_image.resizeLargeFile(`public/uploads/exercise/${image_name}`,`public/uploads/exercise/thumb/${image_name}`,300,300);
+      helper_image.resizeLargeFile(`public/uploads/exercise/male/${image_name}`,`public/uploads/exercise/male/thumb/${image_name}`,300,300);
+    });
+
+    /*female */
+    let uploadedFemaleFile = req.files.female_image;
+    let fileFemaleExtension = uploadedFemaleFile.mimetype.split('/')[1];
+    female_image_name = Date.now()+'-female-'+req.body.title.replace(/\s+/g, "-")+'.' + fileFemaleExtension;
+    await uploadedFemaleFile.mv(`public/uploads/exercise/female/${female_image_name}`, (err ) => {
+      if (err) {
+        return res.status(500).send(err);
+        error.push(err);
+      }
+      helper_image.resizeLargeFile(`public/uploads/exercise/female/${female_image_name}`,`public/uploads/exercise/female/thumb/${female_image_name}`,300,300);
     });
   }
   try {
@@ -40,6 +52,7 @@ exports.add_exercise = async (req, res, next) => {
       insert['duration'] = req.body.duration;
       insert['description'] = req.body.description;
       insert['image'] = image_name;
+      insert['female_image'] = female_image_name;
       var conditions = helper_general.buildInsertConditionsString(insert);
       var sql = "INSERT INTO `exercises`("+conditions.inserts+") VALUES("+conditions.fields+")";
       await dbConnection.execute(sql,conditions.values).then((row) => {
@@ -114,27 +127,30 @@ exports.updateExercise = async (req, res, next) => {
   response['status'] = '0';
   response['data'] = {};
   let image_name = '';
+  let female_image_name = '';
   if (!errors.isEmpty()) {
     error.push(errors.array()[0].msg);
   }
   if(req.files!==null){
-    let old_image = '';
     await helper_exercise.getExerciseDetail(req).then(async (row)=>{
-      old_image =  row.image;
-      await helper_image.removeImage(`public/uploads/exercise/${old_image}`);
-      await helper_image.removeImage(`public/uploads/exercise/thumb/${old_image}`);
-
-      let uploadedFile = req.files.image;
-      let fileExtension = uploadedFile.mimetype.split('/')[1];
-      let msg = req.body.title;
-      image_name = Date.now()+'-'+req.body.title.replace(/\s+/g, "-")+'.' + fileExtension;
-      await uploadedFile.mv(`public/uploads/exercise/${image_name}`, (err ) => {
-        if (err) {
-          return res.status(500).send(err);
+      if(req.files.image){
+        await helper_exercise.updateExerciseImage(req.files.image,req.body.title,'male',row.image).then((result)=>{
+          image_name = result;
+          response['data']['image_url'] = `/uploads/exercise/male/thumb/${image_name}`;
+          console.log("image_name: "+image_name);
+        },(err)=>{
           error.push(err);
-        }
-      });
-      await helper_image.resizeLargeFile(`public/uploads/exercise/${image_name}`,`public/uploads/exercise/thumb/${image_name}`,300,300);
+        });
+      }
+      if(req.files.female_image){
+        await helper_exercise.updateExerciseImage(req.files.female_image,req.body.title,'female',row.female_image).then((result)=>{
+          female_image_name = result;
+          response['data']['female_image_url'] = `/uploads/exercise/female/thumb/${female_image_name}`;
+          console.log("female_image_name: "+female_image_name);
+        },(err)=>{
+          error.push(err);
+        });
+      }
     },
     err=>{
       error.push(err);
@@ -147,6 +163,9 @@ exports.updateExercise = async (req, res, next) => {
       var update = {};
       if(image_name!==''){
         update['image = ?'] = image_name;
+      }
+      if(female_image_name!==''){
+        update['female_image = ?'] = female_image_name;
       }
 
       where['id = ?'] = req.body.id;
@@ -162,9 +181,6 @@ exports.updateExercise = async (req, res, next) => {
       await dbConnection.execute(sql,conditions.values).then((row) => {
         //ResultSetHeader
         response['status'] = '1';
-        if(image_name!==''){
-          response['data']['image_url'] = `/uploads/exercise/thumb/${image_name}`;
-        }
         response['data']['message'] = "Data has been updated successfully.";
       }, (err) => {
         error.push(err.message);
@@ -248,8 +264,9 @@ exports.getExerciseListing = async (req, res, next) => {
           response['status'] = '1';
           row.forEach(function(item,index){
             row[index]['description'] = item.description.substr(0, 150);
-            row[index]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+item.image;
-            row[index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/thumb/'+item.image;
+            var exerciseImage = (req.user.gender == 'female')?item.female_image:item.image;
+            row[index]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+req.user.gender+'/'+exerciseImage;
+            row[index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/'+req.user.gender+'/thumb/'+exerciseImage;
           });
           response['data']['exercises'] = row;
         }
@@ -363,8 +380,9 @@ exports.getBookmarkExercises = async (req, res, next) => {
           row = JSON.parse(JSON.stringify(row));
           if(row[0].length > 0){
             row[0].forEach(function(item,index){
-              row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+item.image;
-              row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/thumb/'+item.image;
+              var exerciseImage = (req.user.gender == 'female')?item.female_image:item.image;
+              row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+req.user.gender+'/'+exerciseImage;
+              row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/'+req.user.gender+'/thumb/'+exerciseImage;
             });
             response['status'] = '1';
             response['data']['exercises'] = row[0];

@@ -38,6 +38,20 @@ exports.add_exercise = [
         }
         return true;
     }),
+    body("female_image").custom((value, { req })=>{
+        let uploadedFile = req.files.female_image;
+        if(uploadedFile.name !== ''){
+          let fileExtension = uploadedFile.mimetype.split('/')[1];
+          const allowedExtension = ["jpeg", "png", "jpg","gif"];
+          if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
+              throw new Error('File format is not allowed, use only jpeg and png.');
+          }
+        }
+        else{
+          throw new Error('Upload female image is required.');
+        }
+        return true;
+    }),
 ];
 
 exports.get_exercise_detail = [
@@ -74,13 +88,26 @@ exports.update_exercise = [
         .trim()
         .isLength({ min: 10 }),
     body("image").custom((value, { req })=>{
-        if(req.files!==null){
-          let uploadedFile = req.files.image;
-          let fileExtension = uploadedFile.mimetype.split('/')[1];
-          const allowedExtension = ["jpeg", "png", "jpg","gif","gif"];
-          if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
-              throw new Error('File format is not allowed, use only jpeg and png.');
-          }
+        if(req.files.image!==undefined){
+            console.log("image >> "+req.files.image);
+            let uploadedFile = req.files.image;
+            let fileExtension = uploadedFile.mimetype.split('/')[1];
+            const allowedExtension = ["jpeg", "png", "jpg","gif"];
+            if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
+                throw new Error('File format is not allowed, use only jpeg and png.');
+            }
+        }
+        return true;
+    }),
+    body("female_image").custom((value, { req })=>{
+        if(req.files.female_image!==undefined){
+            console.log("female_image >> "+req.files.female_image);
+            let uploadedFile = req.files.female_image;
+            let fileExtension = uploadedFile.mimetype.split('/')[1];
+            const allowedExtension = ["jpeg", "png", "jpg","gif"];
+            if(allowedExtension.indexOf(fileExtension.toLowerCase()) < 0){
+                throw new Error('File format is not allowed, use only jpeg and png.');
+            }
         }
         return true;
     }),

@@ -18,7 +18,7 @@ exports.resizeLargeFile =  async (original_path, destination_path, width, height
     .resize({ width: 300, height: 300, fit: 'fill' })
     .on('info', function(fileInfo) {
     console.log("Resizing done, file saved");
-    resolve("Resizing done, file saved");
+    resolve(destination_path);
     });
     inStream.pipe(transform).pipe(outStream);
   });

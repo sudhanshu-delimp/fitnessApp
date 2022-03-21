@@ -104,7 +104,11 @@ exports.edit_profile = [
     body("last_name", "The last name must be of minimum 2 characters length")
         .escape()
         .trim()
-        .isLength({ min: 2 }),    
+        .isLength({ min: 2 }),  
+    body("gender", "Invalid email gender.")
+        .notEmpty()
+        .escape()
+        .trim(),  
     body("email", "Invalid email address.")
         .notEmpty()
         .escape()

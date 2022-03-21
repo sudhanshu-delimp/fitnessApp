@@ -1,5 +1,7 @@
 const dbConnection = require("../utils/dbConnection");
 const helper_general = require("./general");
+const helper_image = require("./image");
+const async = require("async");
 exports.getExercises = async (req, res, next) => {
   const columns = ['id','title','image','id'];
   let limit = req.body.length;
@@ -62,8 +64,9 @@ exports.getExerciseDetail = async (req) => {
     dbConnection.execute(sql,conditions.values).then((row) => {
         row = JSON.parse(JSON.stringify(row));
         if(row[0].length > 0){
-            row[0][0]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+row[0][0]['image'];
-            row[0][0]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/thumb/'+row[0][0]['image'];
+            var exerciseImage = (req.user.gender == 'female')?row[0][0]['female_image']:row[0][0]['image'];
+            row[0][0]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+req.user.gender+'/'+exerciseImage;
+            row[0][0]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/'+req.user.gender+'/thumb/'+exerciseImage;
             resolve(row[0][0]);
         }
         else{
@@ -72,6 +75,47 @@ exports.getExerciseDetail = async (req) => {
     }, (err) => {
         reject(err);
     })
+  });
+}
+
+exports.updateExerciseImage = async (fileObj,title,path,old_file) => {
+  return new Promise(async (resolve, reject)=>{
+    try {
+        let tasks = [];
+        tasks.push(async function(cb){
+          if(old_file){
+            helper_image.removeImage(`public/uploads/exercise/${path}/${old_file}`);
+            helper_image.removeImage(`public/uploads/exercise/${path}/thumb/${old_file}`);
+          }
+          let uploadedFile = fileObj;
+          console.log("uploadedFile: "+uploadedFile);
+          let fileExtension = uploadedFile.mimetype.split('/')[1];
+          console.log("mimetype: "+fileExtension);
+          image_name = Date.now()+'-'+path+'-'+title.replace(/\s+/g, "-")+'.' + fileExtension;
+          await uploadedFile.mv(`public/uploads/exercise/${path}/${image_name}`, (err ) => {
+            if (err) {
+              reject(err);
+              cb(null,err)
+            }
+            helper_image.resizeLargeFile(`public/uploads/exercise/${path}/${image_name}`,`public/uploads/exercise/${path}/thumb/${image_name}`,300,300).then((res)=>{
+              resolve(image_name);
+            });
+          });
+        });
+        tasks.push(function(cb){
+          
+        })
+        async.series(tasks,(err,result)=>{
+          if(err){
+            reject(err)
+          }else{
+            resolve(result);
+          }
+        });        
+    }
+    catch(err){
+      reject(err.message);
+    }
   });
 }
 

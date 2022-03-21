@@ -52,12 +52,31 @@
               <h3 class="box-title">Upload Image</h3>
             </div>
             <div class="box-body">
-              <div class="row">
-                <div class="col-sm-12">
-                  <img class="img-responsive current-image" src="/uploads/exercise/thumb/<%= exercise.image %>" alt="Photo">
+              <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Male</a></li>
+                    <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">Female</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab_1">
+                      <div class="row">
+                        <div class="col-sm-12">
+                          <img class="img-responsive current-image" src="/uploads/exercise/male/thumb/<%= exercise.image %>" alt="Photo">
+                        </div>
+                      </div>
+                      <input class="form-control" type="file" name="image" id="image" value="">
+                    </div>
+                    <div class="tab-pane" id="tab_2">
+                      <div class="row">
+                        <div class="col-sm-12">
+                          <img class="img-responsive current-female-image" src="/uploads/exercise/female/thumb/<%= exercise.female_image %>" alt="Photo">
+                        </div>
+                      </div>
+                      <input class="form-control" type="file" name="female_image" id="female_image" value="">
+                    </div>
                 </div>
-              </div>
-              <input class="form-control" type="file" name="image" id="image" value="">
+            </div>
+              
             </div>
           </div>
         </div>
@@ -87,6 +106,9 @@
         successing_Attr(formID,json.data.message);
         if(json.data.image_url){
           $(".current-image").attr('src',json.data.image_url);
+        }
+        if(json.data.female_image_url){
+          $(".current-female-image").attr('src',json.data.female_image_url);
         }
         table.draw(false);
       }
