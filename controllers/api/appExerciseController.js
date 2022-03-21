@@ -210,8 +210,11 @@ exports.deleteExercise = async (req, res, next) => {
   else{
     await helper_exercise.getExerciseDetail(req).then(async (row)=>{
       old_image =  row.image;
-      await helper_image.removeImage(`public/uploads/exercise/${old_image}`);
-      await helper_image.removeImage(`public/uploads/exercise/thumb/${old_image}`);
+      old_female_image =  row.female_image;
+      await helper_image.removeImage(`public/uploads/exercise/male/${old_image}`);
+      await helper_image.removeImage(`public/uploads/exercise/male/thumb/${old_image}`);
+      await helper_image.removeImage(`public/uploads/exercise/female/${old_female_image}`);
+      await helper_image.removeImage(`public/uploads/exercise/female/thumb/${old_female_image}`);
     },
     err=>{
       error.push(err);
