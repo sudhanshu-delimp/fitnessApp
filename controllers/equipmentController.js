@@ -125,7 +125,7 @@ exports.getExercisesForAssignment = async (req, res, next) => {
       var nestedData = {};
       nestedData['sn'] = helper_general.getSerialNumber(req.body.start, index);
       nestedData['title'] = exercise.title;
-      nestedData['image'] = '<img src="/uploads/exercise/thumb/'+exercise.image+'" class="img-circle" alt="">';
+      nestedData['image'] = '<img src="/uploads/exercise/male/thumb/'+exercise.image+'" class="img-circle" alt=""><img src="/uploads/exercise/female/thumb/'+exercise.female_image+'" class="img-circle" alt="">';
       nestedData['options'] = '<div class="checkbox"><label>';
       var checked = (exercise.equipments_exercises_id!==null)?'checked':'';
       nestedData['options'] += '<input type="checkbox" '+checked+' name="assign" value="'+exercise.id+'" onclick="assigThisExercise(this)"> Assign';
