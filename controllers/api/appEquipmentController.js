@@ -294,13 +294,14 @@ exports.getEquipmentRelatedExercises = async (req, res, next) => {
   }
   try {
     if(error.length == 0){
-      var sql = "SELECT exercises.id,exercises.image,exercises.title,exercises.duration FROM `equipments_exercises` LEFT JOIN `exercises` ON (equipments_exercises.exercise_id = exercises.id) WHERE equipments_exercises.equipment_id = ?";
+      var sql = "SELECT exercises.id,exercises.image,exercises.female_image,exercises.title,exercises.duration FROM `equipments_exercises` LEFT JOIN `exercises` ON (equipments_exercises.exercise_id = exercises.id) WHERE equipments_exercises.equipment_id = ?";
       await dbConnection.execute(sql,[req.body.id]).then((row) => {
           row = JSON.parse(JSON.stringify(row));
           if(row[0].length > 0){
             row[0].forEach(function(item,index){
-              row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+item.image;
-              row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/thumb/'+item.image;
+              var exerciseImage = (req.user.gender == 'female')?item.female_image:item.image;
+              row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/exercise/'+req.user.gender+'/'+exerciseImage;
+              row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/exercise/'+req.user.gender+'/thumb/'+exerciseImage;
             });
             response['status'] = '1';
             response['data']['exercises'] = row[0];
