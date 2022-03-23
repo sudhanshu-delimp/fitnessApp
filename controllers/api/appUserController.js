@@ -419,8 +419,9 @@ exports.getBookmarks = async (req, res, next) => {
 
                 }
               }
-              row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/'+item.image;
-              row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/thumb/'+item.image;
+              var exerciseImage = (req.user.gender == 'female')?item.female_image:item.image;
+            row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/'+req.user.gender+'/'+exerciseImage;
+            row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/'+req.user.gender+'/thumb/'+exerciseImage;
             });
             
             response['status'] = '1';
