@@ -396,7 +396,7 @@ exports.getBookmarks = async (req, res, next) => {
         }
         var conditions = helper_general.buildConditionsString(where);
         var sql = "SELECT b.id as bookmark_id,b.type,";
-        sql += "(CASE b.type WHEN 'equipment' THEN eq.id ELSE ex.id END) as id, (CASE b.type WHEN 'equipment' THEN eq.title ELSE ex.title END) as title, (CASE b.type WHEN 'equipment' THEN eq.description ELSE ex.description END) as description, (CASE b.type WHEN 'equipment' THEN eq.image ELSE ex.image END) as image";
+        sql += "(CASE b.type WHEN 'equipment' THEN eq.id ELSE ex.id END) as id, (CASE b.type WHEN 'equipment' THEN eq.title ELSE ex.title END) as title, (CASE b.type WHEN 'equipment' THEN eq.description ELSE ex.description END) as description, (CASE b.type WHEN 'equipment' THEN eq.image ELSE ex.image END) as image,(CASE b.type WHEN 'equipment' THEN eq.description ELSE ex.description END) as description, (CASE b.type WHEN 'exercise' THEN ex.female_image ELSE ex.image END) as female_image";
         sql += " FROM `bookmarks` as b"
         sql += " LEFT JOIN `exercises` as ex ON (b.source_id = ex.id)";
         sql += " LEFT JOIN `equipments` as eq ON (b.source_id = eq.id)";
@@ -411,17 +411,19 @@ exports.getBookmarks = async (req, res, next) => {
               switch(item.type){
                 case 'equipment':{
                   image_dir = 'equipment';
+                  row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/'+item.image;
+                  row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/thumb/'+item.image;
                 }break;
                 case 'exercise':{
                   image_dir = 'exercise';
+                  var exerciseImage = (req.user.gender == 'female')?item.female_image:item.image;
+                row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/'+req.user.gender+'/'+exerciseImage;
+                row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/'+req.user.gender+'/thumb/'+exerciseImage;
                 }break;
                 default:{
 
                 }
               }
-              var exerciseImage = (req.user.gender == 'female')?item.female_image:item.image;
-            row[0][index]['image_original_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/'+req.user.gender+'/'+exerciseImage;
-            row[0][index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/'+image_dir+'/'+req.user.gender+'/thumb/'+exerciseImage;
             });
             
             response['status'] = '1';
