@@ -44,7 +44,7 @@ exports.getExercises = async (req, res, next) => {
       nestedData['options'] += '<ul class="dropdown-menu">';
       nestedData['options'] += '<li><a onclick="editData(this)" data-id = "'+exercise.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-pencil"></i> Edit</a></li>';
       nestedData['options'] += '<li><a onclick="deleteData(this)" data-id = "'+exercise.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-trash"></i> Delete</a></li>';
-      nestedData['options'] += '<li><a onclick="uploadVideo(this)" data-id = "'+exercise.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-play"></i>Videos</a></li>';
+      //nestedData['options'] += '<li><a onclick="uploadVideo(this)" data-id = "'+exercise.id+'" class="dropdown-item main-text" href="#"><i class="fa fa-fw fa-play"></i>Videos</a></li>';
       nestedData['options'] += '</ul>';
       nestedData['options'] += '</div>';
       data.push(nestedData);
