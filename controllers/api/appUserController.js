@@ -77,11 +77,18 @@ exports.user_register = async (req, res, next) => {
       await dbConnection.execute(sql,conditions.values).then(async (row) => {
         helper_general.insertDeviceToken(row[0]['insertId'], req.body.device_type, req.body.device_token);
         var params = {'user_name':req.body.name,'email':req.body.email,'password':req.body.password};
-        await helper_email.sendEmail(req.body.email, params, 3).then((result)=>{
+        await helper_email.sendEmail(req.body.email, params, 3).then(async (result)=>{
           response['status'] = '1';
-          response['data']['email'] = result.data;
-          response['data']['user_id'] = row[0]['insertId'];
-          response['data']['message'] = "You have successfully registered.";
+          await helper_general.getOtherUserDetail(row[0]['insertId']).then(user_data=>{
+           response['data']['user'] = user_data;
+           response['data']['email'] = result.data;
+           response['data']['user_id'] = row[0]['insertId'];
+           response['data']['message'] = "You have successfully registered.";
+            var token = jwt.sign({ id: user_data.id,email: user_data.email,phone: user_data.phone,gender: user_data.gender}, process.env.JWT_SECRET_KEY, {
+              expiresIn: 86400 // 24 hours
+            });
+            response['data']['accessToken'] = token;
+          });
         },(err) =>{
           response['data']['error'] = err;
         });
