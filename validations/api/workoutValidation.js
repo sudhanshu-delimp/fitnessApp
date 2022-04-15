@@ -294,3 +294,13 @@ exports.update_workout_exercise_detail = [
 exports.get_workouts_count = [
     helper_general.verifyToken,
 ];
+
+exports.update_workout_warmup_time = [
+    helper_general.verifyToken,
+    body("workout_id")
+        .notEmpty()
+        .isInt({ min:1})
+        .withMessage("Workout Id is required")
+        .escape()
+        .trim(),
+];

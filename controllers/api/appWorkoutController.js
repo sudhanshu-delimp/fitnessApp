@@ -805,3 +805,39 @@ exports.getWorkoutsCount = async (req, res, next) => {
     next(e);
   }
 }
+ 
+exports.updateWorkoutWarmupTime = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+
+  try {
+    if(error.length == 0){
+      let action = req.body.action;
+
+      var where = {}, update = {};
+      where['id = ?'] = req.body.workout_id;
+      update['warmup_time = ?'] = req.body.warmup_time;
+      var conditions = helper_general.buildUpdateConditionsString(update, where);
+      var sql = "UPDATE `workouts` SET "+conditions.updates+" WHERE "+conditions.where;
+      await dbConnection.execute(sql,conditions.values).then((res)=>{
+        response['status'] = '1';
+        response['data']['message'] = "upated successfully";
+      }, (err)=>{
+        error.push(err.message);
+        response['data']['error'] = error;
+      });
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    res.json(response);
+  } catch (e) {
+    next(e);
+  }
+}

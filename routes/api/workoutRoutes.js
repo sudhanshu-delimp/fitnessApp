@@ -23,4 +23,5 @@ workoutRoutes.post("/update_workout",validation.update_workout,validateRequest,a
 workoutRoutes.post("/get_workout_exercise_detail",validation.get_workout_exercise_detail,validateRequest,appWorkoutController.getWorkoutExerciseDetail);
 workoutRoutes.post("/update_workout_exercise_detail",validation.update_workout_exercise_detail,validateRequest,appWorkoutController.updateWorkoutExerciseDetail);
 workoutRoutes.post("/get_workouts_count",validation.get_workouts_count,validateRequest,appWorkoutController.getWorkoutsCount);
+workoutRoutes.post("/update_workout_warmup_time",validation.update_workout_warmup_time,validateRequest,appWorkoutController.updateWorkoutWarmupTime);
 module.exports = workoutRoutes;
