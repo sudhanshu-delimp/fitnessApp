@@ -304,7 +304,7 @@ exports.addWorkout = async (req, res, next) => {
         await helper_workout.getWorkouts(req).then((row)=>{
           row = JSON.parse(JSON.stringify(row));
           if(row.length > 0){
-            row.forEach(function(item,index){
+            row.forEach(async function(item,index){
               row[index]['image_original_path'] = process.env.BASE_URL+'/uploads/workout/'+item.image;
               row[index]['image_thumb_path'] = process.env.BASE_URL+'/uploads/workout/thumb/'+item.image;
             });
@@ -832,6 +832,43 @@ exports.updateWorkoutWarmupTime = async (req, res, next) => {
         error.push(err.message);
         response['data']['error'] = error;
       });
+    }
+    else{
+      response['data']['error'] = error;
+    }
+    res.json(response);
+  } catch (e) {
+    next(e);
+  }
+}
+
+exports.favouritesWorkout = async (req, res, next) => {
+  const errors = validationResult(req);
+  var error = [];
+  var response = {};
+  response['status'] = '0';
+  response['data'] = {};
+  if (!errors.isEmpty()) {
+    error.push(errors.array()[0].msg);
+  }
+  try {
+    if(error.length == 0){
+      var where = {}, update = {};
+      var length = await helper_workout.isFavourite(req);
+      var is_favourite = (length > 0)?'0':'1';
+      where['user_id = ?'] = req.user.id;
+      where['id = ?'] = req.body.workout_id;
+      update['is_favourite = ?'] = is_favourite;
+      var conditions = helper_general.buildUpdateConditionsString(update, where);
+      var sql = "UPDATE `workouts` SET "+conditions.updates+" WHERE "+conditions.where;
+      await dbConnection.execute(sql,conditions.values).then(async (row) => {
+        response['status'] = '1';
+        response['data']['action'] = (length > 0)?'remove':'add';
+        response['data']['message'] = "Data saved successfully.";
+      }, (err) => {
+        error.push(err.message);
+        response['data']['error'] = error;
+      })
     }
     else{
       response['data']['error'] = error;

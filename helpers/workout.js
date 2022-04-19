@@ -25,6 +25,9 @@ exports.getWorkouts = async (req, res, next) => {
         where['w.is_finished = ?'] = req.body.is_finished;
       }
       where['w.is_archived = ?'] = req.body.is_archived;
+      if(req.body.is_favourite!==undefined){
+        where['w.is_favourite = ?'] = req.body.is_favourite;
+      }
       var conditions = helper_general.buildConditionsString(where);
       var sql;
       sql = "SELECT w.* FROM `workouts` AS w";
@@ -43,8 +46,10 @@ exports.getWorkouts = async (req, res, next) => {
               })
             })
             tasks.push(function(cb){
-              exports.workoutProgress(item.id).then((data)=>{
+              exports.workoutProgress(item.id).then(async (data)=>{
                 row[0][index]['workout_progress_percentage'] = data;
+                req.body.workout_id = item.id;
+                row[0][index]['is_favourite'] = await exports.isFavourite(req);
                 cb(null, data )
               },(err)=>{
                 cb(null,err)
@@ -352,4 +357,19 @@ exports.getWorkoutExerciseDetail = async (req) => {
         reject(err.message);
     })
   });
+}
+
+exports.isFavourite = async (req) => {
+  return new Promise((resolve, reject)=>{
+    var where = {};
+    where['user_id = ?'] = req.user.id;
+    where['id = ?'] = req.body.workout_id;
+    var conditions = helper_general.buildConditionsString(where);
+    var sql = "SELECT is_favourite FROM `workouts` WHERE "+conditions.where;
+    dbConnection.execute(sql,conditions.values).then((row) => {
+        resolve(row[0][0].is_favourite);
+    }, (err) => {
+        reject(err);
+    })
+});
 }

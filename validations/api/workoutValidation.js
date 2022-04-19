@@ -304,3 +304,12 @@ exports.update_workout_warmup_time = [
         .escape()
         .trim(),
 ];
+
+exports.favourites_workout = [
+    helper_general.verifyToken,
+    body("workout_id", "Invalid workout id.")
+        .notEmpty()
+        .isInt({ min:1})
+        .escape()
+        .trim(),
+];
