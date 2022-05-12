@@ -249,6 +249,9 @@ exports.addWorkout = async (req, res, next) => {
       if(error.length == 0){
         var where = {};
           where['we.workout_id = ?'] = req.body.id;
+          if(req.body.status_not){
+            where['we.status != ?'] = req.body.status_not;
+          }
           var conditions = helper_general.buildConditionsString(where);
           var sql = "SELECT we.id,we.left_duration,we.actual_duration,we.rest_time,we.status,we.reps,we.sets,we.weight,e.id as exercise_id,e.title,e.image,e.female_image FROM `workouts_exercises` as we";
           sql += " LEFT JOIN `exercises` as e ON (we.exercise_id = e.id)";
