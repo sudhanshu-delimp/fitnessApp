@@ -253,7 +253,7 @@ exports.addWorkout = async (req, res, next) => {
             where['we.status != ?'] = req.body.status_not;
           }
           var conditions = helper_general.buildConditionsString(where);
-          var sql = "SELECT we.id,we.left_duration,we.actual_duration,we.rest_time,we.status,we.reps,we.sets,we.weight,e.id as exercise_id,e.title,e.image,e.female_image FROM `workouts_exercises` as we";
+          var sql = "SELECT we.id,we.left_duration,we.actual_duration,we.rest_time,we.status,we.reps,we.sets,we.weight,e.id as exercise_id,e.title,e.image,e.female_image,e.description as exercise_description FROM `workouts_exercises` as we";
           sql += " LEFT JOIN `exercises` as e ON (we.exercise_id = e.id)";
           sql += " WHERE "+conditions.where;
           sql+=" ORDER BY we.position ASC";
