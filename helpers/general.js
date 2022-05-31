@@ -4,6 +4,10 @@ const jwt = require("jsonwebtoken");
 const fs = require('fs');
 var QRCode = require("qrcode");
 
+exports.replaceString = (string) =>{
+  return string.replaceAll(/&amp;/g,"&").replaceAll(/&#x27;/g,"\'");
+}
+
 exports.insertDeviceToken = async (user_id,device_type,device_token) => {
   return new Promise((resolve, reject)=>{
         var insert = {};

@@ -34,7 +34,7 @@ exports.add_equipment = async (req, res, next) => {
     if(error.length == 0){
       var insert = {};
       insert['title'] = req.body.title;
-      insert['description'] = req.body.description;
+      insert['description'] = req.body.description(req.body.description);
       insert['image'] = image_name;
       var conditions = helper_general.buildInsertConditionsString(insert);
       var sql = "INSERT INTO `equipments`("+conditions.inserts+") VALUES("+conditions.fields+")";
@@ -160,7 +160,7 @@ exports.updateEquipment = async (req, res, next) => {
 
       where['id = ?'] = req.body.id;
       update['title = ?'] = req.body.title;
-      update['description = ?'] = req.body.description;
+      update['description = ?'] = req.body.description(req.body.description);
 
       var conditions = helper_general.buildUpdateConditionsString(update, where);
       var sql = "UPDATE `equipments` SET "+conditions.updates+" WHERE "+conditions.where;

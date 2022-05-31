@@ -50,7 +50,7 @@ exports.add_exercise = async (req, res, next) => {
       insert['sets'] = req.body.sets;
       insert['weight'] = req.body.weight;
       insert['duration'] = req.body.duration;
-      insert['description'] = req.body.description;
+      insert['description'] = helper_general.replaceString(req.body.description);
       insert['image'] = image_name;
       insert['female_image'] = female_image_name;
       var conditions = helper_general.buildInsertConditionsString(insert);
@@ -174,7 +174,7 @@ exports.updateExercise = async (req, res, next) => {
       update['sets = ?'] = req.body.sets;
       update['weight = ?'] = req.body.weight;
       update['duration = ?'] = req.body.duration;
-      update['description = ?'] = req.body.description;
+      update['description = ?'] = helper_general.replaceString(req.body.description);
 
       var conditions = helper_general.buildUpdateConditionsString(update, where);
       var sql = "UPDATE `exercises` SET "+conditions.updates+" WHERE "+conditions.where;

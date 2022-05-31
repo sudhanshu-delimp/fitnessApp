@@ -51,7 +51,7 @@ exports.addWorkout = async (req, res, next) => {
         insert['user_id'] = req.user.id;
         insert['schedule_time'] = req.body.schedule_time;
         insert['schedule_date'] = req.body.schedule_date;
-        insert['description'] = req.body.description;
+        insert['description'] = helper_general.replaceString(req.body.description);
         insert['image'] = image_name;
         insert['warmup_time'] = req.body.warmup_time; 
         var conditions = helper_general.buildInsertConditionsString(insert);
@@ -63,6 +63,7 @@ exports.addWorkout = async (req, res, next) => {
           }
           response['status'] = '1';
           response['data']['workout_id'] = row[0]['insertId'];
+          response['data']['insert'] = insert;
           response['data']['message'] = "Workout has been added successfully.";
         }, (err) => {
           error.push(err.message);
@@ -666,7 +667,7 @@ exports.addWorkout = async (req, res, next) => {
           update['title = ?'] = req.body.title;
           update['schedule_time = ?'] = req.body.schedule_time;
           update['schedule_date = ?'] = req.body.schedule_date;
-          update['description = ?'] = req.body.description;
+          update['description = ?'] = helper_general.replaceString(req.body.description);
           update['warmup_time = ?'] = req.body.warmup_time;
           if(image_name!=''){
               update['image = ?'] = image_name;
