@@ -5,7 +5,7 @@ const fs = require('fs');
 var QRCode = require("qrcode");
 
 exports.replaceString = (string) =>{
-  return string.replaceAll(/&amp;/g,"&").replaceAll(/&#x27;/g,"\'");
+  return string.replace(/&amp;/g,"&").replace(/&#x27;/g,"\'");
 }
 
 exports.insertDeviceToken = async (user_id,device_type,device_token) => {
